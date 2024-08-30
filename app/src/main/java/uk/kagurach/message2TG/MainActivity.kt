@@ -102,6 +102,8 @@ fun SettingPage(ctx: Context,defaultToken: String,defaultChatId: Long) {
     mutableStateOf(Color.Black)
   }
 
+  var passwordVisibility
+
   val rowStyle = Modifier
     .fillMaxWidth()
     .padding(vertical = 20.dp, horizontal = 20.dp)
@@ -122,6 +124,7 @@ fun SettingPage(ctx: Context,defaultToken: String,defaultChatId: Long) {
           fontFamily = FontFamily.Monospace,
           color = botTokenTextColor
         ),
+
         modifier = Modifier
           .weight(1f)
           .horizontalScroll(rememberScrollState())
