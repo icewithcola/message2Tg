@@ -110,15 +110,15 @@ class BotApiImpl {
       var response: MessageReturned? = null
       try {
         response = service.sendMessage(realToken, realChatId, text)
-      }catch (e: retrofit2.HttpException){
-        if (errorHandler != null){
+      } catch (e: retrofit2.HttpException) {
+        if (errorHandler != null) {
           errorHandler.invoke(e)
-        }else{
-          loge(e.printStackTrace().toString(),::sendMessage.name)
+        } else {
+          loge(e.printStackTrace().toString(), ::sendMessage.name)
           return@launch
         }
       }
-      if (response==null){
+      if (response == null) {
         return@launch
       }
       if (response.ok) {
@@ -146,11 +146,11 @@ class BotApiImpl {
       val result: UpdatesReturned
       try {
         result = service.getUpdates(token ?: defaultToken, offset, limit, timeout)
-      }catch (e: retrofit2.HttpException) {
-        if (errorHandler!=null){
+      } catch (e: retrofit2.HttpException) {
+        if (errorHandler != null) {
           errorHandler.invoke(e)
-        }else {
-          loge(e.printStackTrace().toString(),::getUpdates.name)
+        } else {
+          loge(e.printStackTrace().toString(), ::getUpdates.name)
         }
         return@launch
       }
