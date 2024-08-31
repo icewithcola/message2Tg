@@ -67,7 +67,7 @@ class BotApiImpl {
     onFinished: ((UserReturned) -> Unit)? = null
   ) {
 
-    if (!validate(initDefaults, token)) {
+    if (!validateArgNotNullOrHasDefault(initDefaults, token)) {
       throw RuntimeException("this function should be called either use default value or give every parameter")
     }
 
@@ -105,7 +105,7 @@ class BotApiImpl {
     onSuccess: ((Message) -> Unit)? = null,
     onFinished: ((MessageReturned) -> Unit)? = null
   ) {
-    if (!validate(initDefaults, token, chatId)) {
+    if (!validateArgNotNullOrHasDefault(initDefaults, token, chatId)) {
       throw RuntimeException("this function should be called either use default value or give every parameter")
     }
 
@@ -143,7 +143,7 @@ class BotApiImpl {
     onSuccess: ((List<Update>) -> Unit)? = null,
     onFinished: ((UpdatesReturned) -> Unit)? = null
   ) {
-    if (!validate(initDefaults, token)) {
+    if (!validateArgNotNullOrHasDefault(initDefaults, token)) {
       throw RuntimeException("this function should be called either use default value or give every parameter")
     }
 

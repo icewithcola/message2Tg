@@ -7,4 +7,6 @@
   <string name="send_message_to_bot">向机器人发送任意消息</string>
   <string name="chat_id">对话 id</string>
   <string name="bot_token">机器人 token</string>
+  <string name="need_start_bot">请先向机器人发送 /start</string>
+  <string name="no_token_in_clipboard">无法在剪贴板里找到 bot token</string>
 </resources>

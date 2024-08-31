@@ -40,8 +40,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getString
 import androidx.core.content.ContextCompat.getSystemService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import uk.kagurach.message2TG.ui.compose.Inputer
 import uk.kagurach.tgbotapi.BotApiImpl
+import uk.kagurach.tgbotapi.validateBotToken
+import uk.kagurach.tgbotapi.validatePartialBotToken
 
 class MainActivity : ComponentActivity() {
 
@@ -112,7 +117,8 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
       labelText = getString(ctx, R.string.bot_token),
       iconPainter = painterResource(R.drawable.content_paste),
       onValueChange = {
-        token = it.trimIndent()
+        if (it.isEmpty() || validatePartialBotToken(it))
+          token = it
       },
       iconButtonOnClick = {
         val clipboard = getSystemService(ctx, ClipboardManager::class.java)
@@ -123,7 +129,13 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
         }
         val pasteData = clipboard.primaryClip?.getItemAt(0)
         if (pasteData != null) {
-          token = pasteData.text.toString().split('\n')[0].trimIndent()
+          val data = pasteData.text.toString().split('\n')[0].trimIndent()
+          if (validateBotToken(data)) {
+            token = data
+          } else {
+            Toast.makeText(ctx, getString(ctx, R.string.no_token_in_clipboard), Toast.LENGTH_SHORT)
+              .show()
+          }
         }
       },
       onFocusChanged = { focusState ->
@@ -141,21 +153,11 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
       iconPainter = painterResource(R.drawable.track_changes),
       keyboardType = KeyboardType.Decimal,
       onValueChange = { newInput ->
-        if (newInput.isEmpty()) {
+        if (newInput.isEmpty() || newInput == "-") {
           chatId = 0
-          return@InputBox
+        } else if (newInput.matches("^(-|)\\d{0,16}\$".toRegex())) {
+          chatId = newInput.toLong()
         }
-
-        var result = ""
-        if (newInput.startsWith("-")) {
-          result += "-"
-        }
-        newInput.forEach {
-          if (it in '0'..'9') {
-            result += it
-          }
-        }
-        chatId = result.toLong()
       },
       iconButtonOnClick = {
         if (token.isEmpty()) {
@@ -166,12 +168,17 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
         botApiImpl.getUpdates(
           limit = 1,
           timeout = 10,
-          onHttpError = { err ->
-            if (err.code() == 401 || err.code() == 404) { // Failed To authenticate or wrong token
-              Toast.makeText(ctx, getString(ctx, R.string.wrong_bot_token), Toast.LENGTH_SHORT)
-                .show()
-            } else {
-              throw err
+          onHttpError = { e ->
+            CoroutineScope(Dispatchers.Main).launch {
+              Toast.makeText(
+                ctx, getString(
+                  ctx, when (e.code()) {
+                    400 -> R.string.need_start_bot
+                    401, 404 -> R.string.wrong_bot_token
+                    else -> throw e
+                  }
+                ), Toast.LENGTH_SHORT
+              ).show()
             }
           },
           onSuccess = { result ->
@@ -189,10 +196,26 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
     Button(onClick = {
       val botApiImpl = BotApiImpl(token, chatId)
       val storage = Storage(ctx)
-      botApiImpl.sendMessage(text = getString(ctx, R.string.connect_success)) {
-        storage.setDefaults(token, chatId)
-        testAndStartService(ctx, true)
-      }
+      botApiImpl.sendMessage(
+        text = getString(ctx, R.string.connect_success),
+        onHttpError = { e ->
+          CoroutineScope(Dispatchers.Main).launch {
+            Toast.makeText(
+              ctx, getString(
+                ctx, when (e.code()) {
+                  400 -> R.string.need_start_bot
+                  401, 404 -> R.string.wrong_bot_token
+                  else -> throw e
+                }
+              ), Toast.LENGTH_SHORT
+            ).show()
+          }
+        },
+        onSuccess = {
+          storage.setDefaults(token, chatId)
+          testAndStartService(ctx, true)
+        }
+      )
     }) {
       Text(text = getString(ctx, R.string.start_service))
     }
