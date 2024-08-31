@@ -22,8 +22,18 @@ class NewMessageHandler : BroadcastReceiver() {
     }
 
     val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-    messages.forEach { message ->
-      botApiImpl.sendMessage(text = "From ${message.originatingAddress}:\n${message.messageBody}")
+    if (messages.isEmpty()){
+      return
     }
+
+    val messageText = StringBuilder()
+    val sender = messages[0].originatingAddress
+    messages.forEach { message ->
+      if (message.originatingAddress == sender) {
+        messageText.append(message.messageBody)
+      }
+    }
+    // TODO: Add Message filter and Template
+    botApiImpl.sendMessage(text = "From ${sender}:\n${messageText}")
   }
 }
