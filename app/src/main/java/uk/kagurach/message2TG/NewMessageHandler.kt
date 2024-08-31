@@ -22,7 +22,7 @@ class NewMessageHandler : BroadcastReceiver() {
     }
 
     val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-    if (messages.isEmpty()){
+    if (messages.isEmpty()) {
       return
     }
 

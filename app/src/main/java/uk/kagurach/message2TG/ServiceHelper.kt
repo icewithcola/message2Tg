@@ -23,11 +23,12 @@ fun validateChatId(
   var result = false
   botApiImpl.sendMessage(
     text = text ?: ContextCompat.getString(context, R.string.connect_success),
-  ) {
-    if (it.text == text) {
-      result = true
+    onSuccess = {
+      if (it.text == text) {
+        result = true
+      }
     }
-  }
+  )
   return result
 }
 

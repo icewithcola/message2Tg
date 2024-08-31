@@ -166,22 +166,23 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
         botApiImpl.getUpdates(
           limit = 1,
           timeout = 10,
-          errorHandler = { err ->
+          onHttpError = { err ->
             if (err.code() == 401 || err.code() == 404) { // Failed To authenticate or wrong token
               Toast.makeText(ctx, getString(ctx, R.string.wrong_bot_token), Toast.LENGTH_SHORT)
                 .show()
-            } else{
+            } else {
               throw err
             }
-          }
-        ) { result ->
-          if (result.isNotEmpty()) {
-            val gotId = result[0].message?.chat?.id ?: 0
-            if (chatId == 0L && gotId != 0L) {
-              chatId = gotId
+          },
+          onSuccess = { result ->
+            if (result.isNotEmpty()) {
+              val gotId = result[0].message?.chat?.id ?: 0
+              if (chatId == 0L && gotId != 0L) {
+                chatId = gotId
+              }
             }
           }
-        }
+        )
       }
     )
 

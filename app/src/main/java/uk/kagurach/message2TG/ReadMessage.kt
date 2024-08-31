@@ -4,7 +4,7 @@ import android.content.Context
 import android.provider.Telephony.Sms
 import android.util.Log
 
-fun ReadMessage(ctx: Context): List<String> {
+fun readMessage(ctx: Context): List<String> {
   val cursor = ctx.contentResolver.query(
     Sms.CONTENT_URI,
     null, null, null

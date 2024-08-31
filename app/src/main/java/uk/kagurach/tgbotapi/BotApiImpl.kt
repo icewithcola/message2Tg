@@ -12,6 +12,7 @@ import uk.kagurach.tgbotapi.typeadapter.Message
 import uk.kagurach.tgbotapi.typeadapter.MessageReturned
 import uk.kagurach.tgbotapi.typeadapter.Update
 import uk.kagurach.tgbotapi.typeadapter.UpdatesReturned
+import uk.kagurach.tgbotapi.typeadapter.User
 import uk.kagurach.tgbotapi.typeadapter.UserReturned
 import kotlin.properties.Delegates
 
@@ -22,28 +23,6 @@ class BotApiImpl {
     var initDefaults = false
     lateinit var defaultToken: String
     var defaultChatId by Delegates.notNull<Long>()
-
-    fun loge(msg: String?, func: String) { // For log errors only
-      Log.e(
-        "BotApiImpl", "$func ran failed " +
-          if (!msg.isNullOrBlank()) {
-            "with message $msg"
-          } else {
-            ""
-          }
-      )
-    }
-
-    fun logd(msg: String?, func: String) { // For log success only
-      Log.d(
-        "BotApiImpl", "$func ran success " +
-          if (!msg.isNullOrBlank()) {
-            "with message $msg"
-          } else {
-            ""
-          }
-      )
-    }
   }
 
   constructor()
@@ -73,22 +52,47 @@ class BotApiImpl {
   private val service: BotApiInterface = retrofit.create(BotApiInterface::class.java)
   private val scope = CoroutineScope(Dispatchers.IO)
 
-  fun getMe(token: String? = null, resultHandler: ((UserReturned) -> Unit)? = null) {
-    if (token == null && !initDefaults) {
+  /** get...: Get the response and handle certain circumstances
+   *  @param ... Are token or other things this function use
+   *  @param onHttpError when getResponse throws HttpException, runs. If null, error the exception
+   *  @param onFailure if response.ok == false, invokes with whole Returned value
+   *  @param onSuccess if response.ok == true, invokes with result Object
+   *  @param onFinished always invoke on the last line
+   */
+  fun getMe(
+    token: String? = null,
+    onHttpError: ((retrofit2.HttpException) -> Unit)? = null,
+    onFailure: ((UserReturned) -> Unit)? = null,
+    onSuccess: ((User) -> Unit)? = null,
+    onFinished: ((UserReturned) -> Unit)? = null
+  ) {
+
+    if (!validate(initDefaults, token)) {
       throw RuntimeException("this function should be called either use default value or give every parameter")
     }
 
     scope.launch {
-      val response = service.getMe(token ?: defaultToken)
-
-      if (response.ok) {
-        // Set checked token
-        logd(response.result.toString(), ::getMe.name)
-      } else {
-        loge(null, ::getMe.name)
+      val response: UserReturned
+      try {
+        response = service.getMe(token ?: defaultToken)
+      } catch (exception: retrofit2.HttpException) {
+        if (onHttpError != null) {
+          onHttpError.invoke(exception)
+        } else {
+          error(exception)
+        }
+        return@launch
       }
-      // At last we handle result
-      resultHandler?.invoke(response)
+
+      // Invoke by result
+      if (response.ok) {
+        onSuccess?.invoke(response.result)
+      } else {
+        onFailure?.invoke(response)
+      }
+
+      // Invoke last
+      onFinished?.invoke(response)
     }
   }
 
@@ -96,37 +100,36 @@ class BotApiImpl {
     token: String? = null,
     chatId: Long? = null,
     text: String,
-    errorHandler: ((retrofit2.HttpException) -> Unit)? = null,
-    resultHandler: ((Message) -> Unit)? = null
+    onHttpError: ((retrofit2.HttpException) -> Unit)? = null,
+    onFailure: ((MessageReturned) -> Unit)? = null,
+    onSuccess: ((Message) -> Unit)? = null,
+    onFinished: ((MessageReturned) -> Unit)? = null
   ) {
-    if ((token == null || chatId == null) && !initDefaults) {
+    if (!validate(initDefaults, token, chatId)) {
       throw RuntimeException("this function should be called either use default value or give every parameter")
     }
 
     scope.launch {
-      val realToken = token ?: defaultToken
-      val realChatId = chatId ?: defaultChatId
+      val response: MessageReturned
 
-      var response: MessageReturned? = null
       try {
-        response = service.sendMessage(realToken, realChatId, text)
-      } catch (e: retrofit2.HttpException) {
-        if (errorHandler != null) {
-          errorHandler.invoke(e)
+        response = service.sendMessage(token ?: defaultToken, chatId ?: defaultChatId, text)
+      } catch (exception: retrofit2.HttpException) {
+        if (onHttpError != null) {
+          onHttpError.invoke(exception)
         } else {
-          loge(e.printStackTrace().toString(), ::sendMessage.name)
-          return@launch
+          error(exception)
         }
-      }
-      if (response == null) {
         return@launch
       }
+
       if (response.ok) {
-        logd(response.result.text, ::sendMessage.name)
+        onSuccess?.invoke(response.result)
       } else {
-        loge(null, ::sendMessage.name)
+        onFailure?.invoke(response)
       }
-      resultHandler?.invoke(response.result)
+
+      onFinished?.invoke(response)
     }
   }
 
@@ -135,28 +138,35 @@ class BotApiImpl {
     offset: Int? = null,
     limit: Int? = null,
     timeout: Int? = null,
-    errorHandler: ((retrofit2.HttpException) -> Unit)? = null,
-    resultHandler: ((List<Update>) -> Unit)?
+    onHttpError: ((retrofit2.HttpException) -> Unit)? = null,
+    onFailure: ((UpdatesReturned) -> Unit)? = null,
+    onSuccess: ((List<Update>) -> Unit)? = null,
+    onFinished: ((UpdatesReturned) -> Unit)? = null
   ) {
-    if (token == null && !initDefaults) {
+    if (!validate(initDefaults, token)) {
       throw RuntimeException("this function should be called either use default value or give every parameter")
     }
 
     scope.launch {
-      val result: UpdatesReturned
+      val response: UpdatesReturned
       try {
-        result = service.getUpdates(token ?: defaultToken, offset, limit, timeout)
-      } catch (e: retrofit2.HttpException) {
-        if (errorHandler != null) {
-          errorHandler.invoke(e)
+        response = service.getUpdates(token ?: defaultToken, offset, limit, timeout)
+      } catch (exception: retrofit2.HttpException) {
+        if (onHttpError != null) {
+          onHttpError.invoke(exception)
         } else {
-          loge(e.printStackTrace().toString(), ::getUpdates.name)
+          error(exception)
         }
         return@launch
       }
-      if (result.ok) {
-        resultHandler?.invoke(result.result)
+
+      if (response.ok) {
+        onSuccess?.invoke(response.result)
+      } else {
+        onFailure?.invoke(response)
       }
+
+      onFinished?.invoke(response)
     }
   }
 }
