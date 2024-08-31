@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">message2TG</string>
+  <string name="connect_success">已成功连接到Telegram服务器</string>
+  <string name="start_service">开始</string>
+  <string name="wrong_bot_token">bot token 错误</string>
+  <string name="send_message_to_bot">向机器人发送任意消息</string>
+  <string name="chat_id">对话 id</string>
+  <string name="bot_token">机器人 token</string>
+</resources>

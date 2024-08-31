@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getString
 import androidx.core.content.ContextCompat.getSystemService
 import uk.kagurach.message2TG.ui.compose.Inputer
 import uk.kagurach.tgbotapi.BotApiImpl
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity() {
         arrayOf(permission.READ_SMS, permission.RECEIVE_SMS), 1001
       )
     }
+
     val storage = Storage(baseContext)
     var token: String = ""
     var chatId: Long = 0
@@ -99,6 +101,7 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
     iconModifier = Modifier
       .size(56.dp)
   )
+
   Column(
     modifier = Modifier.fillMaxSize(),
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -106,7 +109,7 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
   ) {
     inputer.InputBox(
       value = token,
-      labelText = "Bot token",
+      labelText = getString(ctx, R.string.bot_token),
       iconPainter = painterResource(R.drawable.content_paste),
       onValueChange = {
         token = it.trimIndent()
@@ -134,7 +137,7 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
 
     inputer.InputBox(
       value = if (chatId == 0L) "" else chatId.toString(),
-      labelText = "Chat id",
+      labelText = getString(ctx, R.string.chat_id),
       iconPainter = painterResource(R.drawable.track_changes),
       keyboardType = KeyboardType.Decimal,
       onValueChange = { newInput ->
@@ -158,14 +161,17 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
         if (token.isEmpty()) {
           return@InputBox
         }
-        Toast.makeText(ctx, "Send message to your bot", Toast.LENGTH_SHORT).show()
+        Toast.makeText(ctx, getString(ctx, R.string.send_message_to_bot), Toast.LENGTH_SHORT).show()
         val botApiImpl = BotApiImpl(token, chatId)
         botApiImpl.getUpdates(
           limit = 1,
-          timeout = 5,
+          timeout = 10,
           errorHandler = { err ->
             if (err.code() == 401 || err.code() == 404) { // Failed To authenticate or wrong token
-              Toast.makeText(ctx, "Wrong bot token", Toast.LENGTH_SHORT).show()
+              Toast.makeText(ctx, getString(ctx, R.string.wrong_bot_token), Toast.LENGTH_SHORT)
+                .show()
+            } else{
+              throw err
             }
           }
         ) { result ->
@@ -182,12 +188,12 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
     Button(onClick = {
       val botApiImpl = BotApiImpl(token, chatId)
       val storage = Storage(ctx)
-      botApiImpl.sendMessage(text = "Message2Tg Connected successfully") { result ->
+      botApiImpl.sendMessage(text = getString(ctx, R.string.connect_success)) {
         storage.setDefaults(token, chatId)
         testAndStartService(ctx, true)
       }
     }) {
-      Text(text = "Go!")
+      Text(text = getString(ctx, R.string.start_service))
     }
   }
 }

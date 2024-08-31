@@ -1,3 +1,9 @@
 <resources>
   <string name="app_name">message2TG</string>
+  <string name="connect_success">Message2Tg Connected successfully</string>
+  <string name="start_service">Go!</string>
+  <string name="wrong_bot_token">Wrong bot token</string>
+  <string name="send_message_to_bot">Send any message to your bot</string>
+  <string name="chat_id">Chat id</string>
+  <string name="bot_token">Bot token</string>
 </resources>

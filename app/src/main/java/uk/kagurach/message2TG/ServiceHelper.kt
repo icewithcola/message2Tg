@@ -2,29 +2,42 @@ package uk.kagurach.message2TG
 
 import android.content.Context
 import android.content.Intent
+import androidx.core.content.ContextCompat
 import uk.kagurach.tgbotapi.BotApiImpl
 
-fun testAndStartService(context: Context, skipCheck: Boolean = false) {
-  if (!skipCheck) {
-    if (!isConfigOkay(context)) {
-      return
-    }
+/** testAndStartService
+ * @param skipChatIdCheck if true, only check the bot token with getMe()
+ */
+fun testAndStartService(context: Context, skipChatIdCheck: Boolean = false) {
+  if ((skipChatIdCheck && !validateBotToken(context) || (!skipChatIdCheck && !validateChatId(context)))) {
+    return
   }
   context.startService(Intent(context, ForwardService::class.java))
 }
 
-fun isConfigOkay(
+fun validateChatId(
   context: Context,
-  text: String = "Connected to Telegram, running as service"
+  text: String? = null
 ): Boolean {
   val botApiImpl = BotApiImpl(context)
   var result = false
   botApiImpl.sendMessage(
-    text = text,
+    text = text ?: ContextCompat.getString(context, R.string.connect_success),
   ) {
     if (it.text == text) {
       result = true
     }
+  }
+  return result
+}
+
+fun validateBotToken(
+  context: Context
+): Boolean {
+  val botApiImpl = BotApiImpl(context)
+  var result = false
+  botApiImpl.getMe {
+    result = it.ok
   }
   return result
 }
