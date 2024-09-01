@@ -8,4 +8,6 @@
   <string name="bot_token">Bot token</string>
   <string name="need_start_bot">Please send /start to bot first</string>
   <string name="no_token_in_clipboard">Cannot find a bot token in clipboard</string>
+  <string name="silent_test">Send silent message on start service</string>
+  <string name="silent_test_dscr">Silent start</string>
 </resources>

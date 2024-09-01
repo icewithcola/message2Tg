@@ -14,6 +14,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import uk.kagurach.message2TG.R
+import uk.kagurach.message2TG.SettingStorage
 import uk.kagurach.message2TG.ui.compose.Setting
 
 @Composable
@@ -21,7 +24,7 @@ fun AdvancedSettings(context: Context) {
   val setting = Setting(
     rowModifier = Modifier
       .fillMaxWidth()
-      .padding(horizontal = 20.dp, vertical = 8.dp),
+      .padding(horizontal = 20.dp, vertical = 10.dp),
     nameTextStyle = TextStyle(
       fontSize = 24.sp,
       fontWeight = FontWeight(400),
@@ -30,22 +33,20 @@ fun AdvancedSettings(context: Context) {
     descriptionModifier = Modifier.padding(start = 2.dp)
   )
 
-
+  val settingStorage = SettingStorage(context)
 
   Column(
     modifier = Modifier
       .fillMaxWidth()
       .fillMaxHeight(0.8f)
+      .padding(horizontal = 8.dp)
       .verticalScroll(rememberScrollState())
   ) {
     setting.BooleanSetting(
-      name = "I set something",
-      description = "Yes"
-    )
+      name = ContextCompat.getString(context, R.string.silent_test_dscr),
+      description = ContextCompat.getString(context, R.string.silent_test),
+      initialState = settingStorage.get(settingStorage.sendSilentMessageOnTest)?: false
+    ){ settingStorage.set(settingStorage.sendSilentMessageOnTest,it) }
 
-    setting.BooleanSetting(
-      name = "I set something too",
-      description = "Noooooo"
-    )
   }
 }

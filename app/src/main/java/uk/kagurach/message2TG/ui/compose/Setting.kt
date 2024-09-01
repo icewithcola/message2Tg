@@ -57,7 +57,10 @@ class Setting(
       Spacer(modifier = Modifier.weight(1f))
       Switch(
         checked = checkState,
-        onCheckedChange = onCheckedChange ?: { checkState = it },
+        onCheckedChange = {
+          checkState = it
+          onCheckedChange?.invoke(it)
+        },
         modifier = switchModifier
       )
     }

@@ -34,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import uk.kagurach.message2TG.BotStorage
 import uk.kagurach.message2TG.R
+import uk.kagurach.message2TG.SettingStorage
 import uk.kagurach.message2TG.testAndStartService
 import uk.kagurach.message2TG.ui.compose.Inputer
 import uk.kagurach.tgbotapi.BotApiImpl
@@ -45,6 +46,8 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
   var token by remember { mutableStateOf(defaultToken) }
   var chatId by remember { mutableLongStateOf(defaultChatId) }
   var tokenVisibility by remember { mutableStateOf(false) }
+
+  val settingStorage = SettingStorage(ctx)
 
   val inputer = Inputer(
     inputTextStyle = TextStyle(
@@ -150,6 +153,7 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
       val botStorage = BotStorage(ctx)
       botApiImpl.sendMessage(
         text = getString(ctx, R.string.connect_success),
+        disableNotification = settingStorage.get(settingStorage.sendSilentMessageOnTest),
         onHttpError = { e ->
           CoroutineScope(Dispatchers.Main).launch {
             Toast.makeText(

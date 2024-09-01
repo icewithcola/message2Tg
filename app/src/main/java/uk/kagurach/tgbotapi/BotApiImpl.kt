@@ -100,6 +100,7 @@ class BotApiImpl {
     token: String? = null,
     chatId: Long? = null,
     text: String,
+    disableNotification: Boolean? = null,
     onHttpError: ((retrofit2.HttpException) -> Unit)? = null,
     onFailure: ((MessageReturned) -> Unit)? = null,
     onSuccess: ((Message) -> Unit)? = null,
@@ -113,7 +114,12 @@ class BotApiImpl {
       val response: MessageReturned
 
       try {
-        response = service.sendMessage(token ?: defaultToken, chatId ?: defaultChatId, text)
+        response = service.sendMessage(
+          token ?: defaultToken,
+          chatId ?: defaultChatId,
+          text,
+          disableNotification
+        )
       } catch (exception: retrofit2.HttpException) {
         if (onHttpError != null) {
           onHttpError.invoke(exception)

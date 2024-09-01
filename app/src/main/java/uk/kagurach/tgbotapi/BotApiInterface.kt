@@ -18,7 +18,8 @@ interface BotApiInterface {
   suspend fun sendMessage(
     @Path("token") token: String,
     @Query("chat_id") chatId: Long,
-    @Query("text") text: String
+    @Query("text") text: String,
+    @Query("disable_notification") disableNotification: Boolean?
   ): MessageReturned
 
   @GET("/bot{token}/getUpdates")

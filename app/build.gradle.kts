@@ -14,8 +14,8 @@ android {
     applicationId = "uk.kagurach.message2TG"
     minSdk = 27
     targetSdk = 34
-    versionCode = 6
-    versionName = "1.1.4"
+    versionCode = 7
+    versionName = "1.1.5"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables {
