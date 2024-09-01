@@ -17,7 +17,7 @@ import kotlinx.coroutines.runBlocking
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-class Storage(private val context: Context) {
+class BotStorage(private val context: Context) {
   private val defaultToken = stringPreferencesKey("default_token")
   private val defaultChatId = longPreferencesKey("default_chatId")
 

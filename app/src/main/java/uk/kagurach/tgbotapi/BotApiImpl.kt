@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import uk.kagurach.message2TG.Storage
+import uk.kagurach.message2TG.BotStorage
 import uk.kagurach.tgbotapi.typeadapter.Message
 import uk.kagurach.tgbotapi.typeadapter.MessageReturned
 import uk.kagurach.tgbotapi.typeadapter.Update
@@ -27,8 +27,8 @@ class BotApiImpl {
 
   constructor()
   constructor(ctx: Context) {
-    val storage = Storage(ctx)
-    storage.getDefaults { s, l ->
+    val botStorage = BotStorage(ctx)
+    botStorage.getDefaults { s, l ->
       if (s != null && l != null) {
         defaultToken = s
         defaultChatId = l
