@@ -43,7 +43,6 @@ class Inputer(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardType: KeyboardType = KeyboardType.Text
   ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     TextField(
       value = value,
@@ -54,7 +53,6 @@ class Inputer(
         .onFocusChanged { onFocusChanged.invoke(it) },
       visualTransformation = visualTransformation,
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = keyboardType),
-      keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
       trailingIcon = {
         IconButton(
           onClick = iconButtonOnClick,
