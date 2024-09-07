@@ -17,6 +17,7 @@ val Context.settingStore: DataStore<Preferences> by preferencesDataStore(name = 
 
 class SettingStorage(private val context: Context) {
   val sendSilentMessageOnTest = booleanPreferencesKey("send_silent_message_on_test")
+  val extractVerifyCode = booleanPreferencesKey("extract_verify_code")
 
   fun <T> get(key: Preferences.Key<T>): T? =
     runBlocking {

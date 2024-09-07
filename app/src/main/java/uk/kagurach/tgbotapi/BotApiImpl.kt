@@ -101,6 +101,7 @@ class BotApiImpl {
     chatId: Long? = null,
     text: String,
     disableNotification: Boolean? = null,
+    parseMode: String? = null,
     onHttpError: ((retrofit2.HttpException) -> Unit)? = null,
     onFailure: ((MessageReturned) -> Unit)? = null,
     onSuccess: ((Message) -> Unit)? = null,
@@ -118,13 +119,14 @@ class BotApiImpl {
           token ?: defaultToken,
           chatId ?: defaultChatId,
           text,
-          disableNotification
+          disableNotification,
+          parseMode
         )
       } catch (exception: retrofit2.HttpException) {
         if (onHttpError != null) {
           onHttpError.invoke(exception)
         } else {
-          error(exception)
+          Log.e("BotApiImpl",exception.printStackTrace().toString())
         }
         return@launch
       }

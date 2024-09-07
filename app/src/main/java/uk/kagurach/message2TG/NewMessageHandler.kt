@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
 import android.util.Log
+import uk.kagurach.message2TG.util.formatMessage
 import uk.kagurach.tgbotapi.BotApiImpl
 
 class NewMessageHandler : BroadcastReceiver() {
@@ -15,6 +16,7 @@ class NewMessageHandler : BroadcastReceiver() {
       return
     }
     botApiImpl = BotApiImpl(context)
+
 
     if (intent == null || intent.action != "android.provider.Telephony.SMS_RECEIVED") {
       Log.i("NewMessageHandler", "Called by unknown or null intent?")
@@ -33,7 +35,10 @@ class NewMessageHandler : BroadcastReceiver() {
         messageText.append(message.messageBody)
       }
     }
-    // TODO: Add Message filter and Template
-    botApiImpl.sendMessage(text = "From ${sender}:\n${messageText}")
+
+    botApiImpl.sendMessage(
+      text = formatMessage(context, sender.toString(), messageText.toString()),
+      parseMode = "MarkdownV2"
+    )
   }
 }

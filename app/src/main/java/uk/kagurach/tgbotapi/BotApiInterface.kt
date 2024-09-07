@@ -19,7 +19,8 @@ interface BotApiInterface {
     @Path("token") token: String,
     @Query("chat_id") chatId: Long,
     @Query("text") text: String,
-    @Query("disable_notification") disableNotification: Boolean?
+    @Query("disable_notification") disableNotification: Boolean?,
+    @Query("parse_mode") parseMode: String?
   ): MessageReturned
 
   @GET("/bot{token}/getUpdates")

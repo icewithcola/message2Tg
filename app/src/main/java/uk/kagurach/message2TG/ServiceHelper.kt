@@ -11,8 +11,8 @@ import uk.kagurach.tgbotapi.BotApiImpl
 fun testAndStartService(context: Context, skipChatIdCheck: Boolean = false) {
   if (skipChatIdCheck) {
     if (!validateBotToken(context))
-    return
-  }else if (!validateChatId(context)){
+      return
+  } else if (!validateChatId(context)) {
     return
   }
   context.startService(Intent(context, ForwardService::class.java))
