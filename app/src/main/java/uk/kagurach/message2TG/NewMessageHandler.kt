@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
 import android.util.Log
-import uk.kagurach.message2TG.util.extractVerifyCode
 import uk.kagurach.message2TG.util.formatMessage
 import uk.kagurach.tgbotapi.BotApiImpl
 
@@ -37,6 +36,9 @@ class NewMessageHandler : BroadcastReceiver() {
       }
     }
 
-    botApiImpl.sendMessage(text = formatMessage(context,sender.toString(),messageText.toString()), parseMode = "MarkdownV2")
+    botApiImpl.sendMessage(
+      text = formatMessage(context, sender.toString(), messageText.toString()),
+      parseMode = "MarkdownV2"
+    )
   }
 }

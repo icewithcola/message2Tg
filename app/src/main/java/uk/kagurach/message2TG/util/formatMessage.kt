@@ -5,13 +5,13 @@ import uk.kagurach.message2TG.R
 import uk.kagurach.message2TG.SettingStorage
 
 // Make the result always acceptable to API
-fun String.promiseValue(): String{
-  return this.replace("-","\\-")
+fun String.promiseValue(): String {
+  return this.replace("-", "\\-")
 }
 
-fun formatMessage(context: Context,sender: String,text: String):String {
+fun formatMessage(context: Context, sender: String, text: String): String {
   val settingStorage = SettingStorage(context)
-  val code =  if (settingStorage.get(settingStorage.extractVerifyCode) == true){
+  val code = if (settingStorage.get(settingStorage.extractVerifyCode) == true) {
     extractVerifyCode(text)
   } else null
 
@@ -21,7 +21,7 @@ fun formatMessage(context: Context,sender: String,text: String):String {
   sb.append("${context.getString(R.string.sender)} `${sender.promiseValue()}` \n")
 
   // Optional: Code
-  if (code!=null){
+  if (code != null) {
     sb.append("${context.getString(R.string.verification_code)} `${code.promiseValue()}`\n")
   }
 

@@ -45,13 +45,13 @@ fun AdvancedSettings(context: Context) {
     setting.BooleanSetting(
       name = ContextCompat.getString(context, R.string.silent_test),
       description = ContextCompat.getString(context, R.string.silent_test_dscr),
-      initialState = settingStorage.get(settingStorage.sendSilentMessageOnTest)?: false
-    ){ settingStorage.set(settingStorage.sendSilentMessageOnTest,it) }
+      initialState = settingStorage.get(settingStorage.sendSilentMessageOnTest) ?: false
+    ) { settingStorage.set(settingStorage.sendSilentMessageOnTest, it) }
 
     setting.BooleanSetting(
       name = ContextCompat.getString(context, R.string.extract_code),
       description = ContextCompat.getString(context, R.string.extra_code_dscr),
-      initialState = settingStorage.get(settingStorage.extractVerifyCode)?: false
-    ){ settingStorage.set(settingStorage.extractVerifyCode,it) }
+      initialState = settingStorage.get(settingStorage.extractVerifyCode) ?: false
+    ) { settingStorage.set(settingStorage.extractVerifyCode, it) }
   }
 }
