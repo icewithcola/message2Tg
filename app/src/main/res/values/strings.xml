@@ -8,6 +8,8 @@
   <string name="bot_token">Bot token</string>
   <string name="need_start_bot">Please send /start to bot first</string>
   <string name="no_token_in_clipboard">Cannot find a bot token in clipboard</string>
-  <string name="silent_test">Send silent message on start service</string>
-  <string name="silent_test_dscr">Silent start</string>
+  <string name="silent_test_dscr">Send silent message on start service</string>
+  <string name="silent_test">Silent start</string>
+  <string name="extract_code">Extract Verifacation Code</string>
+  <string name="extra_code_dscr">Try to extra code from message, experimental and not accurate</string>
 </resources>
