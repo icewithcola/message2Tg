@@ -37,30 +37,31 @@ fun MainUI(context: Context, token: String, chatId: Long) {
         skipPartiallyExpanded = false,
       )
 
-      Column {
-        Box(
-          modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-        )
-
-        MainPage(context, token, chatId)
-
-        Row {
-          Spacer(modifier = Modifier.fillMaxWidth(0.78f))
-          FloatingActionButton(
-            onClick = { showBottomSheet = true },
-            modifier = Modifier.offset(y = (-15).dp)
-          ) {
-            Icon(Icons.Filled.Settings, "Open application settings.")
-          }
-        }
-
+      Box(
+        modifier = Modifier
+          .fillMaxWidth()
+          .statusBarsPadding()
+      ) {
         Box(
           modifier = Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-        )
+        ) {
+          Column {
+            MainPage(context, token, chatId)
+
+            Row {
+              Spacer(modifier = Modifier.fillMaxWidth(0.78f))
+              FloatingActionButton(
+                onClick = { showBottomSheet = true },
+                modifier = Modifier.offset(y = (-15).dp)
+              ) {
+                Icon(Icons.Filled.Settings, "Open application settings.")
+              }
+            }
+          }
+
+        }
       }
 
       if (showBottomSheet) {
