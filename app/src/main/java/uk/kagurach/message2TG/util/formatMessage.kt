@@ -18,7 +18,7 @@ fun formatMessage(context: Context, sender: String, text: String): String {
   val sb = StringBuilder()
 
   // Sender part
-  sb.append("${context.getString(R.string.sender)} `${sender.promiseValue()}` \n")
+  sb.append("${context.getString(R.string.sender)} ${sender.promiseValue()} \n")
 
   // Optional: Code
   if (code != null) {
