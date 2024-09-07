@@ -12,4 +12,7 @@
   <string name="silent_test">Silent start</string>
   <string name="extract_code">Extract Verifacation Code</string>
   <string name="extra_code_dscr">Try to extra code from message, experimental and not accurate</string>
+  <string name="sender">Sender:</string>
+  <string name="verification_code">Verification Code:</string>
+  <string name="original_text">Original Text:</string>
 </resources>

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.provider.Telephony
 import android.util.Log
 import uk.kagurach.message2TG.util.extractVerifyCode
+import uk.kagurach.message2TG.util.formatMessage
 import uk.kagurach.tgbotapi.BotApiImpl
 
 class NewMessageHandler : BroadcastReceiver() {
@@ -16,7 +17,6 @@ class NewMessageHandler : BroadcastReceiver() {
       return
     }
     botApiImpl = BotApiImpl(context)
-    val settingStorage = SettingStorage(context)
 
 
     if (intent == null || intent.action != "android.provider.Telephony.SMS_RECEIVED") {
@@ -36,18 +36,7 @@ class NewMessageHandler : BroadcastReceiver() {
         messageText.append(message.messageBody)
       }
     }
-    // TODO: Add Message filter and Template
 
-    if (settingStorage.get(settingStorage.extractVerifyCode) == true){
-      val code = extractVerifyCode(messageText.toString())
-      if (code!= null){
-        botApiImpl.sendMessage(text = "From ${sender}:\nVerification code: `${code}` \nOriginal text:\n>${messageText}",
-          parseMode = "MarkdownV2"
-        )
-        return
-      }
-    }
-
-    botApiImpl.sendMessage(text = "From ${sender}:\n${messageText}")
+    botApiImpl.sendMessage(text = formatMessage(context,sender.toString(),messageText.toString()), parseMode = "MarkdownV2")
   }
 }

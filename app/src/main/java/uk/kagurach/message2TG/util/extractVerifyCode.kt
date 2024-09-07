@@ -6,7 +6,7 @@ val verifyCodeKeyWords = listOf<String>(
 )
 
 val numberOnlyCode = "\\d{4,6}".toRegex()
-val byPunctuation = "：[0-9a-zA-Z-_]*，".toRegex()
+val byPunctuation = "：([0-9a-zA-Z-_]*)，".toRegex()
 
 fun isVerifyCode(text: String): Boolean{
   for (verifyCodeKeyWord in verifyCodeKeyWords) {
@@ -23,7 +23,7 @@ fun extractVerifyCode(text: String): String?{
   }
 
   val numberMatch = numberOnlyCode.find(text)?.value
-  val punctuationMatch = byPunctuation.find(text)?.value
+  val punctuationMatch = byPunctuation.find(text)?.groupValues?.get(1)
 
   if (punctuationMatch!=null){
     return punctuationMatch

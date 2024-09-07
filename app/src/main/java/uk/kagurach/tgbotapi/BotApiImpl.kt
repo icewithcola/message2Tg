@@ -118,7 +118,7 @@ class BotApiImpl {
         response = service.sendMessage(
           token ?: defaultToken,
           chatId ?: defaultChatId,
-          text.replace("-", "\\-"),
+          text,
           disableNotification,
           parseMode
         )

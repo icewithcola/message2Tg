@@ -13,4 +13,7 @@
   <string name="silent_test_dscr">无声启动</string>
   <string name="extract_code">提取短信验证码</string>
   <string name="extra_code_dscr">尝试提取出验证码，仍在实验中，不一定准确</string>
+  <string name="sender">来自：</string>
+  <string name="verification_code">验证码：</string>
+  <string name="original_text">原消息：</string>
 </resources>
