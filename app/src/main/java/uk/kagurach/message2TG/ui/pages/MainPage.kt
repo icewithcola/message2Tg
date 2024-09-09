@@ -4,6 +4,8 @@ import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -60,10 +64,22 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
       .size(56.dp)
   )
 
+  val keyboardController = LocalSoftwareKeyboardController.current
+  val focusManager = LocalFocusManager.current
+
   Column(
     modifier = Modifier
       .fillMaxHeight(0.9f)
-      .fillMaxWidth(),
+      .fillMaxWidth()
+      .clickable(
+        interactionSource = remember {
+          MutableInteractionSource()
+        },
+        indication = null
+      ) {
+        keyboardController?.hide()
+        focusManager.clearFocus(force = true)
+      },
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center
   ) {
