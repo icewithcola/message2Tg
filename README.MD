@@ -26,4 +26,4 @@ Original text:
 ```
 
 ## Device Specific Configuration
-- XiaoMi: In `Message` program, disable verification code protection
+- XiaoMi: In `Message` program, disable verification code protection. Also give every SMS-Related permissions.
