@@ -119,13 +119,19 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
     )
 
     inputer.InputBox(
-      value = if (chatId == 0L) "" else chatId.toString(),
+      value = when (chatId) {
+        0L -> ""
+        -1L -> "-"
+        else -> chatId.toString()
+      },
       labelText = getString(ctx, R.string.chat_id),
       iconPainter = painterResource(R.drawable.track_changes),
       keyboardType = KeyboardType.Decimal,
       onValueChange = { newInput ->
-        if (newInput.isEmpty() || newInput == "-") {
+        if (newInput.isEmpty()) {
           chatId = 0
+        } else if (newInput == "-") {
+          chatId = -1L
         } else if (newInput.matches("^(-|)\\d{0,16}\$".toRegex())) {
           chatId = newInput.toLong()
         }
