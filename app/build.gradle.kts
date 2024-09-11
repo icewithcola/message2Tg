@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.jetbrains.kotlin.android)
@@ -22,19 +24,32 @@ android {
       useSupportLibrary = true
     }
   }
+  signingConfigs{
+    create("release"){
+      storeFile = File(projectDir, "key.jks")
+      gradleLocalProperties(rootDir, providers).apply {
+        storePassword = getProperty("keyStorePassword", System.getenv("KEYSTORE_PASS"))
+        keyAlias = getProperty("keyAlias", System.getenv("ALIAS_NAME"))
+        keyPassword = getProperty("keyPassword", System.getenv("ALIAS_PASS"))
+      }
 
+      enableV3Signing = true
+      enableV4Signing = true
+    }
+  }
   buildTypes {
     release {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      signingConfig = signingConfigs.getByName("release")
     }
   }
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "17"
   }
   buildFeatures {
     compose = true
