@@ -6,7 +6,13 @@ import uk.kagurach.message2TG.SettingStorage
 
 // Make the result always acceptable to API
 fun String.promiseValue(): String {
-  return this.replace("-", "\\-")
+  return this
+    .replace("-", "\\-")
+    .replace("!","\\!")
+    .replace("_", "\\_")
+    .replace("*", "\\*")
+    .replace("[", "\\[")
+    .replace("`", "\\`")
 }
 
 fun formatMessage(context: Context, sender: String, text: String): String {
