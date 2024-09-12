@@ -143,7 +143,7 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
         Toast.makeText(ctx, getString(ctx, R.string.send_message_to_bot), Toast.LENGTH_SHORT).show()
         val botApiImpl = BotApiImpl(token, chatId)
         botApiImpl.getUpdates(
-          limit = 1,
+          limit = 20,
           timeout = 10,
           onHttpError = { e ->
             CoroutineScope(Dispatchers.Main).launch {
@@ -160,7 +160,7 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
           },
           onSuccess = { result ->
             if (result.isNotEmpty()) {
-              val gotId = result[0].message?.chat?.id ?: 0
+              val gotId = result.last().message?.chat?.id ?: 0
               if (chatId == 0L && gotId != 0L) {
                 chatId = gotId
               }
