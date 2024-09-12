@@ -17,15 +17,15 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
 
     // Check Permission
-    if (ContextCompat.checkSelfPermission(this, permission.READ_SMS)
-      != PackageManager.PERMISSION_GRANTED ||
-      ContextCompat.checkSelfPermission(this, permission.RECEIVE_SMS)
-      != PackageManager.PERMISSION_GRANTED
-    ) {
-      ActivityCompat.requestPermissions(
-        this,
-        arrayOf(permission.READ_SMS, permission.RECEIVE_SMS), 1001
-      )
+    val permissions = arrayOf(permission.READ_SMS, permission.RECEIVE_SMS)
+    permissions.forEach {
+      if (ContextCompat.checkSelfPermission(this, it)
+        != PackageManager.PERMISSION_GRANTED
+      ) {
+        ActivityCompat.requestPermissions(
+          this, permissions, 1001
+        )
+      }
     }
 
     val botStorage = BotStorage(baseContext)
