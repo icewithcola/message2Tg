@@ -5,6 +5,7 @@ import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import uk.kagurach.message2TG.BotStorage
@@ -14,6 +15,7 @@ import uk.kagurach.tgbotapi.typeadapter.Update
 import uk.kagurach.tgbotapi.typeadapter.UpdatesReturned
 import uk.kagurach.tgbotapi.typeadapter.User
 import uk.kagurach.tgbotapi.typeadapter.UserReturned
+import java.util.concurrent.TimeUnit.SECONDS
 import kotlin.properties.Delegates
 
 class BotApiImpl {
@@ -44,10 +46,15 @@ class BotApiImpl {
     defaultChatId = chatId
     initDefaults = true
   }
-
+  private val okHttpClient = OkHttpClient.Builder()
+    .connectTimeout(60,SECONDS)
+    .readTimeout(60,SECONDS)
+    .writeTimeout(60,SECONDS)
+    .build()
   private val retrofit: Retrofit = Retrofit.Builder()
     .baseUrl(BASE_URL)
     .addConverterFactory(MoshiConverterFactory.create())
+    .client(okHttpClient)
     .build()
   private val service: BotApiInterface = retrofit.create(BotApiInterface::class.java)
   private val scope = CoroutineScope(Dispatchers.IO)
