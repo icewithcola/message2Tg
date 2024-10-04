@@ -15,4 +15,7 @@
   <string name="sender">Sender:</string>
   <string name="verification_code">Verification Code:</string>
   <string name="original_text">Original Text:</string>
+  <string name="use_foreground_service">Use foreground service</string>
+  <string name="use_foreground_service_dscr">This helps to keep app not being killed. A notification will be shown</string>
+  <string name="notification_channel_dscr">Keep alive notification</string>
 </resources>

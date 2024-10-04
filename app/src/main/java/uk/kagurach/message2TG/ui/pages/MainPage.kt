@@ -191,7 +191,10 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
         },
         onSuccess = {
           botStorage.setDefaults(token, chatId)
-          testAndStartService(ctx, true)
+          testAndStartService(ctx,
+            true,
+            (settingStorage.get(settingStorage.useForegroundService) == true)
+          )
         }
       )
     }) {

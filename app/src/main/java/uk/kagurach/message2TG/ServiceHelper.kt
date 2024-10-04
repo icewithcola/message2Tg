@@ -8,14 +8,19 @@ import uk.kagurach.tgbotapi.BotApiImpl
 /** testAndStartService
  * @param skipChatIdCheck if true, only check the bot token with getMe()
  */
-fun testAndStartService(context: Context, skipChatIdCheck: Boolean = false) {
-  if (skipChatIdCheck) {
-    if (!validateBotToken(context))
-      return
-  } else if (!validateChatId(context)) {
-    return
+fun testAndStartService(context: Context, skipChatIdCheck: Boolean = false,startForegroundService: Boolean = false) {
+  // if (!skipChatIdCheck) {
+  //   if (!validateBotToken(context))
+  //     return
+  // } else if (!validateChatId(context)) {
+  //   return
+  // }
+  if (startForegroundService){
+    val intent = Intent(context,ForwardService::class.java)
+    context.startForegroundService(intent)
+  }else {
+    context.startService(Intent(context, ForwardService::class.java))
   }
-  context.startService(Intent(context, ForwardService::class.java))
 }
 
 fun validateChatId(

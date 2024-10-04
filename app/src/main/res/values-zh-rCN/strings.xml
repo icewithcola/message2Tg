@@ -16,4 +16,7 @@
   <string name="sender">来自：</string>
   <string name="verification_code">验证码：</string>
   <string name="original_text">原消息：</string>
+  <string name="use_foreground_service">使用前台服务</string>
+  <string name="use_foreground_service_dscr">帮助应用不被杀死，会显示一条通知</string>
+  <string name="notification_channel_dscr">保活通知</string>
 </resources>

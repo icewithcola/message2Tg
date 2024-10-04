@@ -16,11 +16,13 @@ import uk.kagurach.tgbotapi.typeadapter.UpdatesReturned
 import uk.kagurach.tgbotapi.typeadapter.User
 import uk.kagurach.tgbotapi.typeadapter.UserReturned
 import java.util.concurrent.TimeUnit.SECONDS
+import javax.net.ssl.SSLException
 import kotlin.properties.Delegates
 
 class BotApiImpl {
   companion object {
     const val BASE_URL = "https://api.telegram.org/"
+    var CONNECTION_RETRY = 0
 
     var initDefaults = false
     lateinit var defaultToken: String
@@ -136,8 +138,14 @@ class BotApiImpl {
           Log.e("BotApiImpl",exception.printStackTrace().toString())
         }
         return@launch
+      } catch (exception: SSLException){
+        Log.e("BotApiImpl",exception.printStackTrace().toString())
+        if (CONNECTION_RETRY <= 3){
+          CONNECTION_RETRY ++
+          sendMessage(token, chatId, text, disableNotification, parseMode, onHttpError)
+        }
+        return@launch
       }
-
       if (response.ok) {
         onSuccess?.invoke(response.result)
       } else {
@@ -145,6 +153,7 @@ class BotApiImpl {
       }
 
       onFinished?.invoke(response)
+      CONNECTION_RETRY = 0
     }
   }
 

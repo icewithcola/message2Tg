@@ -53,5 +53,11 @@ fun AdvancedSettings(context: Context) {
       description = ContextCompat.getString(context, R.string.extra_code_dscr),
       initialState = settingStorage.get(settingStorage.extractVerifyCode) ?: false
     ) { settingStorage.set(settingStorage.extractVerifyCode, it) }
+
+    setting.BooleanSetting(
+      name = context.getString(R.string.use_foreground_service),
+      description = context.getString(R.string.use_foreground_service_dscr),
+      initialState = settingStorage.get(settingStorage.useForegroundService) ?: false
+    ){ settingStorage.set(settingStorage.useForegroundService,it) }
   }
 }
