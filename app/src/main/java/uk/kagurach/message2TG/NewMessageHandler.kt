@@ -6,6 +6,7 @@ import android.content.Intent
 import android.provider.Telephony
 import android.util.Log
 import uk.kagurach.message2TG.util.formatMessage
+import uk.kagurach.message2TG.util.logi
 import uk.kagurach.tgbotapi.BotApiImpl
 
 class NewMessageHandler : BroadcastReceiver() {
@@ -19,7 +20,7 @@ class NewMessageHandler : BroadcastReceiver() {
 
 
     if (intent == null || intent.action != "android.provider.Telephony.SMS_RECEIVED") {
-      Log.i("NewMessageHandler", "Called by unknown or null intent?")
+      logi("NewMessageHandler", "Called by unknown or null intent?")
       return
     }
 

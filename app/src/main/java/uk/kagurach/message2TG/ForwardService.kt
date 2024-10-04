@@ -10,6 +10,7 @@ import android.os.Build.VERSION_CODES
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ServiceCompat
+import uk.kagurach.message2TG.util.logi
 
 class ForwardService : Service() {
   companion object {
@@ -58,7 +59,7 @@ class ForwardService : Service() {
   }
 
   override fun onLowMemory() {
-    Log.i("message2TG","Low System Memory")
+    logi("message2TG","Low System Memory")
     stopSelf()
     super.onLowMemory()
   }

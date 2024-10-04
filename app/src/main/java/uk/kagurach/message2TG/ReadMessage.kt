@@ -3,6 +3,7 @@ package uk.kagurach.message2TG
 import android.content.Context
 import android.provider.Telephony.Sms
 import android.util.Log
+import uk.kagurach.message2TG.util.loge
 
 fun readMessage(ctx: Context): List<String> {
   val cursor = ctx.contentResolver.query(
@@ -24,7 +25,7 @@ fun readMessage(ctx: Context): List<String> {
 
     cursor.close()
   } else {
-    Log.e("ReadMessage", "Cannot initialize cursor to read SMS")
+    loge("ReadMessage", "Cannot initialize cursor to read SMS")
   }
 
   return result

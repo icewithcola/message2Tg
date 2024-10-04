@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import uk.kagurach.message2TG.BotStorage
+import uk.kagurach.message2TG.util.loge
 import uk.kagurach.tgbotapi.typeadapter.Message
 import uk.kagurach.tgbotapi.typeadapter.MessageReturned
 import uk.kagurach.tgbotapi.typeadapter.Update
@@ -38,7 +39,7 @@ class BotApiImpl {
         defaultChatId = l
         initDefaults = true
       } else {
-        Log.e("BotApiImpl", "Cannot read token and chatId from storage")
+        loge("BotApiImpl", "Cannot read token and chatId from storage")
       }
     }
   }
@@ -135,11 +136,11 @@ class BotApiImpl {
         if (onHttpError != null) {
           onHttpError.invoke(exception)
         } else {
-          Log.e("BotApiImpl",exception.printStackTrace().toString())
+          loge("BotApiImpl",exception.printStackTrace().toString())
         }
         return@launch
       } catch (exception: SSLException){
-        Log.e("BotApiImpl",exception.printStackTrace().toString())
+        loge("BotApiImpl",exception.printStackTrace().toString())
         if (CONNECTION_RETRY <= 3){
           CONNECTION_RETRY ++
           sendMessage(token, chatId, text, disableNotification, parseMode, onHttpError)
