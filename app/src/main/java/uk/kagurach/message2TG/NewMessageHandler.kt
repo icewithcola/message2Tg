@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
-import android.util.Log
 import uk.kagurach.message2TG.util.formatMessage
 import uk.kagurach.message2TG.util.logi
 import uk.kagurach.tgbotapi.BotApiImpl
