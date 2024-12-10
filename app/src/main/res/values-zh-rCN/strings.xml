@@ -19,4 +19,6 @@
   <string name="use_foreground_service">使用前台服务</string>
   <string name="use_foreground_service_dscr">帮助应用不被杀死，会显示一条通知</string>
   <string name="notification_channel_dscr">保活通知</string>
+  <string name="silent_in_night">夜间静音</string>
+  <string name="silent_in_night_dscr">将在 23:00 至次日 6:30 发送静音消息</string>
 </resources>

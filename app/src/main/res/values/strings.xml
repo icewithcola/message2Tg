@@ -18,4 +18,6 @@
   <string name="use_foreground_service">Use foreground service</string>
   <string name="use_foreground_service_dscr">This helps to keep app not being killed. A notification will be shown</string>
   <string name="notification_channel_dscr">Keep alive notification</string>
+  <string name="silent_in_night">Silent In Night</string>
+  <string name="silent_in_night_dscr">Message will not be notified from 23:00 until 6:30 next day</string>
 </resources>

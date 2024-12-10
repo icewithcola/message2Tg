@@ -8,7 +8,6 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.ServiceCompat
 import uk.kagurach.message2TG.util.logi
 
@@ -60,6 +59,7 @@ class ForwardService : Service() {
 
   override fun onLowMemory() {
     logi("message2TG","Low System Memory")
+    stopForeground(STOP_FOREGROUND_REMOVE)
     stopSelf()
     super.onLowMemory()
   }

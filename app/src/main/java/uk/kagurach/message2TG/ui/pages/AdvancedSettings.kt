@@ -45,19 +45,26 @@ fun AdvancedSettings(context: Context) {
     setting.BooleanSetting(
       name = ContextCompat.getString(context, R.string.silent_test),
       description = ContextCompat.getString(context, R.string.silent_test_dscr),
-      initialState = settingStorage.get(settingStorage.sendSilentMessageOnTest) ?: false
+      initialState = settingStorage.get(settingStorage.sendSilentMessageOnTest) == true
     ) { settingStorage.set(settingStorage.sendSilentMessageOnTest, it) }
 
     setting.BooleanSetting(
       name = ContextCompat.getString(context, R.string.extract_code),
       description = ContextCompat.getString(context, R.string.extra_code_dscr),
-      initialState = settingStorage.get(settingStorage.extractVerifyCode) ?: false
+      initialState = settingStorage.get(settingStorage.extractVerifyCode) == true
     ) { settingStorage.set(settingStorage.extractVerifyCode, it) }
 
     setting.BooleanSetting(
       name = context.getString(R.string.use_foreground_service),
       description = context.getString(R.string.use_foreground_service_dscr),
-      initialState = settingStorage.get(settingStorage.useForegroundService) ?: false
+      initialState = settingStorage.get(settingStorage.useForegroundService) == true
     ){ settingStorage.set(settingStorage.useForegroundService,it) }
+
+    setting.BooleanSetting(
+      name = context.getString(R.string.silent_in_night),
+      description = context.getString(R.string.silent_in_night_dscr),
+      initialState = settingStorage.get(settingStorage.silentInNight) == true
+    ){ settingStorage.set(settingStorage.silentInNight,it) }
+
   }
 }

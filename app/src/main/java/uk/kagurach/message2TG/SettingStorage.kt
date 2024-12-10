@@ -19,6 +19,7 @@ class SettingStorage(private val context: Context) {
   val sendSilentMessageOnTest = booleanPreferencesKey("send_silent_message_on_test")
   val extractVerifyCode = booleanPreferencesKey("extract_verify_code")
   val useForegroundService = booleanPreferencesKey("use_foreground_service")
+  val silentInNight = booleanPreferencesKey("silent_in_night")
 
   fun <T> get(key: Preferences.Key<T>): T? =
     runBlocking {
