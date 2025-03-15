@@ -5,18 +5,11 @@ import android.app.Service
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo
-import android.net.NetworkRequest
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.ServiceCompat
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import uk.kagurach.message2TG.util.logi
-import java.util.concurrent.TimeUnit
 
 class ForwardService : Service() {
   companion object {
@@ -84,20 +77,7 @@ class ForwardService : Service() {
     acquireWakeLock()
 
     // 4. 把后台接受指令消息打开
-    val workRequest = PeriodicWorkRequestBuilder<CommandWorker>(45, TimeUnit.SECONDS)
-      .setConstraints(
-        Constraints.Builder()
-          .setRequiredNetworkRequest(NetworkRequest.Builder().build(), NetworkType.CONNECTED)
-          .build()
-      )
-      .build()
-
-    WorkManager.getInstance(baseContext).enqueueUniquePeriodicWork(
-      "CommandWorker",
-      ExistingPeriodicWorkPolicy.KEEP, // 避免重复任务
-      workRequest
-    )
-
+    CommandWorker.scheduleOneTimeWork(baseContext)
 
     return START_STICKY
   }
