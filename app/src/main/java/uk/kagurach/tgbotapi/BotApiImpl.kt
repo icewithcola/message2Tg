@@ -13,6 +13,7 @@ import uk.kagurach.message2TG.BotStorage
 import uk.kagurach.message2TG.util.loge
 import uk.kagurach.tgbotapi.typeadapter.Message
 import uk.kagurach.tgbotapi.typeadapter.MessageReturned
+import uk.kagurach.tgbotapi.typeadapter.Returned
 import uk.kagurach.tgbotapi.typeadapter.Update
 import uk.kagurach.tgbotapi.typeadapter.UpdatesReturned
 import uk.kagurach.tgbotapi.typeadapter.User
@@ -37,10 +38,10 @@ class BotApiImpl {
 
   constructor(ctx: Context) {
     val botStorage = BotStorage(ctx)
-    botStorage.getDefaults { s, l ->
-      if (s != null && l != null) {
-        defaultToken = s
-        defaultChatId = l
+    botStorage.getDefaults { token, chatId ->
+      if (token != null && chatId != null) {
+        defaultToken = token
+        defaultChatId = chatId
         initDefaults = true
       } else {
         loge(TAG, "Cannot read token and chatId from storage")
@@ -67,19 +68,12 @@ class BotApiImpl {
   private val service: BotApiInterface = retrofit.create(BotApiInterface::class.java)
   private val scope = CoroutineScope(Dispatchers.IO)
 
-  /** get...: Get the response and handle certain circumstances
-   *  @param ... Are token or other things this function use
-   *  @param onHttpError when getResponse throws HttpException, runs. If null, error the exception
-   *  @param onFailure if response.ok == false, invokes with whole Returned value
-   *  @param onSuccess if response.ok == true, invokes with result Object
-   *  @param onFinished always invoke on the last line
-   */
   fun getMe(
     token: String? = null,
-    onHttpError: ((HttpException) -> Unit)? = null,
-    onFailure: ((UserReturned) -> Unit)? = null,
-    onSuccess: ((User) -> Unit)? = null,
-    onFinished: ((UserReturned) -> Unit)? = null,
+    onHttpError: ((HttpException) -> Unit) = {},
+    onFailure: ((UserReturned) -> Unit) = {},
+    onSuccess: ((User) -> Unit) = {},
+    onFinished: ((UserReturned) -> Unit) = {},
   ) {
     checkArgument(token)
 
@@ -88,23 +82,11 @@ class BotApiImpl {
       try {
         response = service.getMe(token ?: defaultToken)
       } catch (exception: HttpException) {
-        if (onHttpError != null) {
-          onHttpError.invoke(exception)
-        } else {
-          error(exception)
-        }
+        httpExceptionHandler(exception, onHttpError)
         return@launch
       }
 
-      // Invoke by result
-      if (response.ok) {
-        onSuccess?.invoke(response.result)
-      } else {
-        onFailure?.invoke(response)
-      }
-
-      // Invoke last
-      onFinished?.invoke(response)
+      responseHandler(response, onFailure, onSuccess, onFinished)
     }
   }
 
@@ -114,10 +96,10 @@ class BotApiImpl {
     text: String,
     disableNotification: Boolean? = null,
     parseMode: String? = null,
-    onHttpError: ((HttpException) -> Unit)? = null,
-    onFailure: ((MessageReturned) -> Unit)? = null,
-    onSuccess: ((Message) -> Unit)? = null,
-    onFinished: ((MessageReturned) -> Unit)? = null,
+    onHttpError: ((HttpException) -> Unit) = {},
+    onFailure: ((MessageReturned) -> Unit) = {},
+    onSuccess: ((Message) -> Unit) = {},
+    onFinished: ((MessageReturned) -> Unit) = {},
   ) {
     checkArgument(token)
 
@@ -133,11 +115,7 @@ class BotApiImpl {
           parseMode
         )
       } catch (exception: HttpException) {
-        if (onHttpError != null) {
-          onHttpError.invoke(exception)
-        } else {
-          loge(TAG, "retrofit2.HttpException:\n${exception.stackTrace}")
-        }
+        httpExceptionHandler(exception, onHttpError)
         return@launch
       } catch (exception: SSLException) {
         loge(TAG, "SSLException:\n${exception.stackTrace}")
@@ -148,13 +126,9 @@ class BotApiImpl {
         }
         return@launch
       }
-      if (response.ok) {
-        onSuccess?.invoke(response.result)
-      } else {
-        onFailure?.invoke(response)
-      }
 
-      onFinished?.invoke(response)
+      responseHandler(response, onFailure, onSuccess, onFinished)
+
       retryCount = 0
     }
   }
@@ -164,10 +138,10 @@ class BotApiImpl {
     offset: Int? = null,
     limit: Int? = null,
     timeout: Int? = null,
-    onHttpError: ((HttpException) -> Unit)? = null,
-    onFailure: ((UpdatesReturned) -> Unit)? = null,
-    onSuccess: ((List<Update>) -> Unit)? = null,
-    onFinished: ((UpdatesReturned) -> Unit)? = null,
+    onHttpError: ((HttpException) -> Unit) = {},
+    onFailure: ((UpdatesReturned) -> Unit) = {},
+    onSuccess: ((List<Update>) -> Unit) = {},
+    onFinished: ((UpdatesReturned) -> Unit) = {},
   ) {
     checkArgument(token)
 
@@ -176,21 +150,11 @@ class BotApiImpl {
       try {
         response = service.getUpdates(token ?: defaultToken, offset, limit, timeout)
       } catch (exception: HttpException) {
-        if (onHttpError != null) {
-          onHttpError.invoke(exception)
-        } else {
-          error(exception)
-        }
+        httpExceptionHandler(exception, onHttpError)
         return@launch
       }
 
-      if (response.ok) {
-        onSuccess?.invoke(response.result)
-      } else {
-        onFailure?.invoke(response)
-      }
-
-      onFinished?.invoke(response)
+      responseHandler(response, onFailure, onSuccess, onFinished)
     }
   }
 
@@ -198,5 +162,44 @@ class BotApiImpl {
     if (!validateArgNotNullOrHasDefault(initDefaults, token)
     ) {
       throw RuntimeException("this function should be called either use default value or give every parameter")
-    } else { }
+    } else {
+    }
+
+  /**
+   * Inline function for handling httpException
+   */
+  private inline fun httpExceptionHandler(
+    exception: HttpException,
+    onHttpError: ((HttpException) -> Unit),
+  ) {
+    loge(TAG, exception.message.toString())
+    onHttpError.invoke(exception)
+  }
+
+  /**
+   * Handles the API response based on the `Returned` interface.
+   *
+   * This function determines whether to invoke `onSuccess` or `onFailure` based on the `ok` status
+   * of the response. The `onFinished` callback is always executed at the end.
+   *
+   * @param response The API response object that implements `Returned<Result>`, containing an `ok` status and a `result`.
+   * @param onFailure Callback invoked when `response.ok` is `false`. Receives the `response` as a parameter. Default is an empty function.
+   * @param onSuccess Callback invoked when `response.ok` is `true`. Receives the `result` of the response as a parameter. Default is an empty function.
+   * @param onFinished Callback executed after processing the response, regardless of success or failure. Receives the `response` as a parameter. Default is an empty function.
+   */
+  private inline fun <reified Return, reified Result> responseHandler(
+    response: Return,
+    onFailure: ((Return) -> Unit),
+    onSuccess: ((Result) -> Unit),
+    onFinished: ((Return) -> Unit),
+  )
+    where Return : Returned<Result> {
+    if (response.ok) {
+      onSuccess.invoke(response.result)
+    } else {
+      onFailure.invoke(response)
+    }
+
+    onFinished.invoke(response)
+  }
 }
