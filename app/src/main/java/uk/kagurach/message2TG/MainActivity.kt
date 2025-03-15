@@ -3,9 +3,7 @@ package uk.kagurach.message2TG
 import android.Manifest.permission
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
@@ -45,7 +43,7 @@ class MainActivity : ComponentActivity() {
     }
 
     // Make notification channel
-    val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     val notificationChannel = NotificationChannel(
       "FOREGROUND_SERVICE",
       getString(R.string.notification_channel_dscr),
@@ -54,7 +52,7 @@ class MainActivity : ComponentActivity() {
     notificationManager.createNotificationChannel(notificationChannel)
 
     val botStorage = BotStorage(baseContext)
-    var token: String = ""
+    var token = ""
     var chatId: Long = 0
     botStorage.getDefaults { s, l ->
       token = s ?: ""

@@ -1,13 +1,9 @@
 package uk.kagurach.message2TG
 
-import android.app.Notification
-import android.app.Service
-import android.content.Intent
-import android.content.IntentFilter
+import android.app.*
+import android.content.*
 import android.content.pm.ServiceInfo
-import android.os.Build
-import android.os.Build.VERSION_CODES
-import android.os.IBinder
+import android.os.*
 import androidx.core.app.ServiceCompat
 import uk.kagurach.message2TG.util.logi
 
@@ -16,18 +12,34 @@ class ForwardService : Service() {
     var isStarted = false
   }
 
+  private var wakeLock: PowerManager.WakeLock? = null
+
   override fun onBind(intent: Intent?): IBinder? {
     return null
   }
 
-  private fun startForeground(){
-    val notification = Notification.Builder(this,"FOREGROUND_SERVICE")
+  private fun acquireWakeLock() {
+    val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+    wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "message2TG:WakeLock")
+    wakeLock?.acquire(10 * 60 * 1000L /* 10 minutes */)
+  }
+
+  private fun releaseWakeLock() {
+    wakeLock?.release()
+    wakeLock = null
+  }
+
+  private fun startForegroundService() {
+    val notification = Notification.Builder(this, "FOREGROUND_SERVICE")
+      .setContentTitle("Forward Service Running")
+      .setContentText("Listening for new SMS messages")
       .build()
+
     ServiceCompat.startForeground(
       this,
       104,
       notification,
-      if (Build.VERSION.SDK_INT >= VERSION_CODES.R) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
       } else {
         0
@@ -39,28 +51,43 @@ class ForwardService : Service() {
     if (isStarted) {
       return START_STICKY_COMPATIBILITY
     }
-    if (Build.VERSION.SDK_INT > VERSION_CODES.TIRAMISU) {
-      registerReceiver(
-        NewMessageHandler(), IntentFilter("android.provider.Telephony.SMS_RECEIVED"),
-        RECEIVER_EXPORTED
-      )
+
+    // 1. 监听短信广播
+    val receiver = NewMessageHandler()
+    val intentFilter = IntentFilter("android.provider.Telephony.SMS_RECEIVED")
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED)
     } else {
-      registerReceiver(
-        NewMessageHandler(), IntentFilter("android.provider.Telephony.SMS_RECEIVED"),
-      )
+      registerReceiver(receiver, intentFilter)
     }
+
     isStarted = true
+
+    // 2. 获取设置信息，决定是否开启前台服务
     val settingStorage = SettingStorage(baseContext)
-    if (settingStorage.get(settingStorage.useForegroundService) == true){
-      startForeground()
+    if (settingStorage.get(settingStorage.useForegroundService) == true) {
+      startForegroundService()
     }
+
+    // 3. 获取 WakeLock 保持 CPU 运行
+    acquireWakeLock()
+
     return START_STICKY
   }
 
   override fun onLowMemory() {
-    logi("message2TG","Low System Memory")
-    stopForeground(STOP_FOREGROUND_REMOVE)
-    stopSelf()
-    super.onLowMemory()
+    logi("ForwardService", "Low System Memory - Trying to Restart")
+    restartService()
+  }
+
+  override fun onDestroy() {
+    logi("ForwardService", "Service Destroyed")
+    releaseWakeLock()
+    restartService()
+    super.onDestroy()
+  }
+
+  private fun restartService() {
+    startForegroundService(Intent(applicationContext, ForwardService::class.java))
   }
 }

@@ -2,6 +2,7 @@ package uk.kagurach.message2TG
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.content.ContextCompat
 import uk.kagurach.tgbotapi.BotApiImpl
 
@@ -9,12 +10,13 @@ import uk.kagurach.tgbotapi.BotApiImpl
  * @param skipChatIdCheck if true, only check the bot token with getMe()
  */
 fun testAndStartService(context: Context, skipChatIdCheck: Boolean = false,startForegroundService: Boolean = false) {
-  // if (!skipChatIdCheck) {
-  //   if (!validateBotToken(context))
-  //     return
-  // } else if (!validateChatId(context)) {
-  //   return
-  // }
+  if (!skipChatIdCheck) {
+    if (!validateBotToken(context)) {
+      Log.i("ServiceHelper", "Bot token is wrong")
+      return
+    }
+  }
+
   if (startForegroundService){
     val intent = Intent(context,ForwardService::class.java)
     context.startForegroundService(intent)
@@ -23,6 +25,7 @@ fun testAndStartService(context: Context, skipChatIdCheck: Boolean = false,start
   }
 }
 
+@Suppress("unused")
 fun validateChatId(
   context: Context,
   text: String? = null

@@ -4,23 +4,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import uk.kagurach.message2TG.util.formatMessage
 import uk.kagurach.message2TG.util.logi
 import uk.kagurach.tgbotapi.BotApiImpl
 import java.util.Calendar
 
 class NewMessageHandler : BroadcastReceiver() {
-  private lateinit var botApiImpl: BotApiImpl
 
   override fun onReceive(context: Context?, intent: Intent?) {
-    if (context == null) {
-      return
-    }
-    botApiImpl = BotApiImpl(context)
-
-
-    if (intent == null || intent.action != "android.provider.Telephony.SMS_RECEIVED") {
-      logi("NewMessageHandler", "Called by unknown or null intent?")
+    if (context == null || intent?.action != Telephony.Sms.Intents.SMS_RECEIVED_ACTION) {
+      logi("NewMessageHandler", "Received unknown or null intent")
       return
     }
 
@@ -29,41 +25,44 @@ class NewMessageHandler : BroadcastReceiver() {
       return
     }
 
-    val messageText = StringBuilder()
-    val sender = messages[0].originatingAddress
-    messages.forEach { message ->
-      if (message.originatingAddress == sender) {
-        messageText.append(message.messageBody)
-      }
-    }
+    val sender = messages[0].originatingAddress ?: "Unknown"
+    val messageText = messages.joinToString("") { it.messageBody }
+
+    val botApiImpl = BotApiImpl(context) // 局部初始化，避免 `lateinit`
     val settingStorage = SettingStorage(context)
-    botApiImpl.sendMessage(
-      text = formatMessage(context, sender.toString(), messageText.toString()),
-      disableNotification = if (settingStorage.get(settingStorage.silentInNight) == true){
-        val calendar = Calendar.getInstance()
-        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-        val currentMinute = calendar.get(Calendar.MINUTE)
 
-        // Define the start and end times
-        val startHour = 23
-        val startMinute = 0
-        val endHour = 6
-        val endMinute = 30
+    // 计算是否应该静音
+    val disableNotification = shouldDisableNotification(settingStorage)
 
-        if (currentHour == startHour && currentMinute >= startMinute) {
-          true
-        } else if (currentHour > startHour) {
-          true
-        }
+    // 在 IO 线程执行网络请求，避免阻塞主线程
+    CoroutineScope(Dispatchers.IO).launch {
+      botApiImpl.sendMessage(
+        text = formatMessage(context, sender, messageText),
+        disableNotification = disableNotification,
+        parseMode = "MarkdownV2"
+      )
+    }
+  }
 
-        // Check if the time is between 00:00 and 6:30
-        if (currentHour < endHour || (currentHour == endHour && currentMinute <= endMinute)) {
-          true
-        }
+  /**
+   * 判断当前时间是否属于静音时段
+   */
+  private fun shouldDisableNotification(settingStorage: SettingStorage): Boolean {
+    if (settingStorage.get(settingStorage.silentInNight) != true) {
+      return false
+    }
 
-        false
-      } else false,
-      parseMode = "MarkdownV2"
-    )
+    val calendar = Calendar.getInstance()
+    val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+    val currentMinute = calendar.get(Calendar.MINUTE)
+
+    val startHour = 23
+    val startMinute = 0
+    val endHour = 6
+    val endMinute = 30
+
+    @Suppress("KotlinConstantConditions")
+    return (currentHour > startHour || (currentHour == startHour && currentMinute >= startMinute)) ||
+      (currentHour < endHour || (currentHour == endHour && currentMinute <= endMinute))
   }
 }

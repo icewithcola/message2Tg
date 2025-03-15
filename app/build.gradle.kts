@@ -10,13 +10,13 @@ plugins {
 
 android {
   namespace = "uk.kagurach.message2TG"
-  compileSdk = 34
+  compileSdk = 35
 
   defaultConfig {
     applicationId = "uk.kagurach.message2TG"
     minSdk = 27
-    targetSdk = 34
-    versionName = "1.4.0" // Should be majorV.functionV.subV
+    targetSdk = 35
+    versionName = "1.5.0" // Should be majorV.functionV.subV
     versionCode = versionName!!.replace(".","").toInt()
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -63,6 +63,7 @@ android {
     }
   }
   androidResources {
+    @Suppress("UnstableApiUsage")
     generateLocaleConfig = true
   }
 }

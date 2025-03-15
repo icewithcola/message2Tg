@@ -1,11 +1,12 @@
 package uk.kagurach.tgbotapi
 
 import android.content.Context
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import uk.kagurach.message2TG.BotStorage
@@ -23,14 +24,17 @@ import kotlin.properties.Delegates
 class BotApiImpl {
   companion object {
     const val BASE_URL = "https://api.telegram.org/"
-    var CONNECTION_RETRY = 0
+    const val TAG = "BotApiImpl"
+
+    // Retry counts
+    var retryCount = 0
+    const val MAX_RETRY = 3
 
     var initDefaults = false
     lateinit var defaultToken: String
     var defaultChatId by Delegates.notNull<Long>()
   }
 
-  constructor()
   constructor(ctx: Context) {
     val botStorage = BotStorage(ctx)
     botStorage.getDefaults { s, l ->
@@ -39,7 +43,7 @@ class BotApiImpl {
         defaultChatId = l
         initDefaults = true
       } else {
-        loge("BotApiImpl", "Cannot read token and chatId from storage")
+        loge(TAG, "Cannot read token and chatId from storage")
       }
     }
   }
@@ -49,10 +53,11 @@ class BotApiImpl {
     defaultChatId = chatId
     initDefaults = true
   }
+
   private val okHttpClient = OkHttpClient.Builder()
-    .connectTimeout(60,SECONDS)
-    .readTimeout(60,SECONDS)
-    .writeTimeout(60,SECONDS)
+    .connectTimeout(60, SECONDS)
+    .readTimeout(60, SECONDS)
+    .writeTimeout(60, SECONDS)
     .build()
   private val retrofit: Retrofit = Retrofit.Builder()
     .baseUrl(BASE_URL)
@@ -71,21 +76,18 @@ class BotApiImpl {
    */
   fun getMe(
     token: String? = null,
-    onHttpError: ((retrofit2.HttpException) -> Unit)? = null,
+    onHttpError: ((HttpException) -> Unit)? = null,
     onFailure: ((UserReturned) -> Unit)? = null,
     onSuccess: ((User) -> Unit)? = null,
-    onFinished: ((UserReturned) -> Unit)? = null
+    onFinished: ((UserReturned) -> Unit)? = null,
   ) {
-
-    if (!validateArgNotNullOrHasDefault(initDefaults, token)) {
-      throw RuntimeException("this function should be called either use default value or give every parameter")
-    }
+    checkArgument(token)
 
     scope.launch {
       val response: UserReturned
       try {
         response = service.getMe(token ?: defaultToken)
-      } catch (exception: retrofit2.HttpException) {
+      } catch (exception: HttpException) {
         if (onHttpError != null) {
           onHttpError.invoke(exception)
         } else {
@@ -112,14 +114,12 @@ class BotApiImpl {
     text: String,
     disableNotification: Boolean? = null,
     parseMode: String? = null,
-    onHttpError: ((retrofit2.HttpException) -> Unit)? = null,
+    onHttpError: ((HttpException) -> Unit)? = null,
     onFailure: ((MessageReturned) -> Unit)? = null,
     onSuccess: ((Message) -> Unit)? = null,
-    onFinished: ((MessageReturned) -> Unit)? = null
+    onFinished: ((MessageReturned) -> Unit)? = null,
   ) {
-    if (!validateArgNotNullOrHasDefault(initDefaults, token, chatId)) {
-      throw RuntimeException("this function should be called either use default value or give every parameter")
-    }
+    checkArgument(token)
 
     scope.launch {
       val response: MessageReturned
@@ -132,17 +132,18 @@ class BotApiImpl {
           disableNotification,
           parseMode
         )
-      } catch (exception: retrofit2.HttpException) {
+      } catch (exception: HttpException) {
         if (onHttpError != null) {
           onHttpError.invoke(exception)
         } else {
-          loge("BotApiImpl",exception.printStackTrace().toString())
+          loge(TAG, "retrofit2.HttpException:\n${exception.stackTrace}")
         }
         return@launch
-      } catch (exception: SSLException){
-        loge("BotApiImpl",exception.printStackTrace().toString())
-        if (CONNECTION_RETRY <= 3){
-          CONNECTION_RETRY ++
+      } catch (exception: SSLException) {
+        loge(TAG, "SSLException:\n${exception.stackTrace}")
+        if (retryCount <= MAX_RETRY) {
+          retryCount++
+          delay(40 * retryCount * 1000.toLong())
           sendMessage(token, chatId, text, disableNotification, parseMode, onHttpError)
         }
         return@launch
@@ -154,7 +155,7 @@ class BotApiImpl {
       }
 
       onFinished?.invoke(response)
-      CONNECTION_RETRY = 0
+      retryCount = 0
     }
   }
 
@@ -163,20 +164,18 @@ class BotApiImpl {
     offset: Int? = null,
     limit: Int? = null,
     timeout: Int? = null,
-    onHttpError: ((retrofit2.HttpException) -> Unit)? = null,
+    onHttpError: ((HttpException) -> Unit)? = null,
     onFailure: ((UpdatesReturned) -> Unit)? = null,
     onSuccess: ((List<Update>) -> Unit)? = null,
-    onFinished: ((UpdatesReturned) -> Unit)? = null
+    onFinished: ((UpdatesReturned) -> Unit)? = null,
   ) {
-    if (!validateArgNotNullOrHasDefault(initDefaults, token)) {
-      throw RuntimeException("this function should be called either use default value or give every parameter")
-    }
+    checkArgument(token)
 
     scope.launch {
       val response: UpdatesReturned
       try {
         response = service.getUpdates(token ?: defaultToken, offset, limit, timeout)
-      } catch (exception: retrofit2.HttpException) {
+      } catch (exception: HttpException) {
         if (onHttpError != null) {
           onHttpError.invoke(exception)
         } else {
@@ -194,4 +193,10 @@ class BotApiImpl {
       onFinished?.invoke(response)
     }
   }
+
+  private fun checkArgument(token: String?): Unit =
+    if (!validateArgNotNullOrHasDefault(initDefaults, token)
+    ) {
+      throw RuntimeException("this function should be called either use default value or give every parameter")
+    } else { }
 }
