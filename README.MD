@@ -1,5 +1,13 @@
 # Simple Message Forwarder
 # [中文说明](./README_CN.MD)
+
+Simple Message Forwarder is an application for forwarding SMS to Telegram with its bot api.
+
+
+## Screenshots
+![homepage](./docs/homepage.png)
+![settings](./docs/settings.png)
+
 ## Usage
 - Fill `Bot Token`
 - Fill `Chat Id` (can be filled automatically by clicking button and send any message to the bot)

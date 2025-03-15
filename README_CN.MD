@@ -1,5 +1,13 @@
 # Simple Message Forwarder
 # [English Version](./README.MD)
+
+Simple Message Forwarder 是一个将短信转发到 Telegram 的小型软件。
+
+
+## 截图
+![homepage](./docs/homepage.png)
+![settings](./docs/settings.png)
+
 ## 使用方法
 - 填入 `Bot Token`
 - 填入 `Chat Id` (亦可点击右边按钮，向您的机器人发送任何消息，该信息可以被自动填入)
