@@ -7,6 +7,7 @@ Simple Message Forwarder is an application for forwarding SMS to Telegram with i
 ## Screenshots
 ![homepage](./docs/homepage.png)
 ![settings](./docs/settings.png)
+![message](./docs/message.png)
 
 ## Usage
 - Fill `Bot Token`
