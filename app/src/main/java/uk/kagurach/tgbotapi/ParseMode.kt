@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package uk.kagurach.tgbotapi
 
 enum class ParseMode {
