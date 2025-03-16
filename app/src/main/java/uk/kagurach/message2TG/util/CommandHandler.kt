@@ -60,7 +60,7 @@ object CommandHandler {
       val messages = readMessage(context, messageCount)
       if (messages.isNotEmpty()) {
         val responseText = messages
-          .mapIndexed { idx, (sender, msg) -> "$idx:\n${context.getString(R.string.sender)}: `$sender` $msg" }
+          .mapIndexed { idx, (sender, msg) -> "$idx:\n${formatMessage(context, sender, msg)}" }
           .joinToString("\n")
 
         botApiImpl.sendMessage(text = responseText, parseMode = ParseMode.MARKDOWN)

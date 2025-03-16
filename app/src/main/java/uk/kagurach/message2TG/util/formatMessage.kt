@@ -5,7 +5,7 @@ import uk.kagurach.message2TG.R
 import uk.kagurach.message2TG.SettingStorage
 
 // Make the result always acceptable to API
-fun String.promiseValue(): String {
+private fun String.promiseValue(): String {
   return this
     .replace("-", "\\-")
     .replace("!","\\!")
