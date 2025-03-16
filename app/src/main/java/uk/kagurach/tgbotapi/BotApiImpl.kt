@@ -95,7 +95,7 @@ class BotApiImpl {
     chatId: Long? = null,
     text: String,
     disableNotification: Boolean? = null,
-    parseMode: String? = null,
+    parseMode: ParseMode = ParseMode.NONE,
     onHttpError: ((HttpException) -> Unit) = {},
     onFailure: ((MessageReturned) -> Unit) = {},
     onSuccess: ((Message) -> Unit) = {},
@@ -112,7 +112,7 @@ class BotApiImpl {
           chatId ?: defaultChatId,
           text,
           disableNotification,
-          parseMode
+          parseMode.getName()
         )
       } catch (exception: HttpException) {
         httpExceptionHandler(exception, onHttpError)

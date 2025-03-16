@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import uk.kagurach.message2TG.util.formatMessage
 import uk.kagurach.message2TG.util.logi
 import uk.kagurach.tgbotapi.BotApiImpl
+import uk.kagurach.tgbotapi.ParseMode
 import java.util.Calendar
 
 class NewMessageHandler : BroadcastReceiver() {
@@ -39,7 +40,7 @@ class NewMessageHandler : BroadcastReceiver() {
       botApiImpl.sendMessage(
         text = formatMessage(context, sender, messageText),
         disableNotification = disableNotification,
-        parseMode = "MarkdownV2"
+        parseMode = ParseMode.MARKDOWN
       )
     }
   }

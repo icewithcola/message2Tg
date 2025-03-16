@@ -1,10 +1,7 @@
 package uk.kagurach.message2TG
 
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.net.NetworkRequest
-import android.os.BatteryManager
+import android.util.Log
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
@@ -12,62 +9,89 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import uk.kagurach.message2TG.util.CommandProcessor
+import uk.kagurach.message2TG.util.CommandHandler
+import uk.kagurach.message2TG.util.loge
 import uk.kagurach.message2TG.util.logi
 import uk.kagurach.tgbotapi.BotApiImpl
+import uk.kagurach.tgbotapi.typeadapter.Update
 import java.util.concurrent.TimeUnit
 
 class CommandWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
-  companion object{
+  companion object {
     const val TAG = "CommandWorker"
+    var lastUpdate = 0L
 
     fun scheduleOneTimeWork(context: Context) {
       val workRequest = OneTimeWorkRequestBuilder<CommandWorker>()
         .setInitialDelay(90, TimeUnit.SECONDS) // 1.5 分钟后执行
         .setConstraints(
           Constraints.Builder()
-            .setRequiredNetworkRequest(NetworkRequest.Builder().build(), NetworkType.CONNECTED)
+            .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
         )
         .build()
 
       WorkManager.getInstance(context).enqueueUniqueWork(
         TAG,
-        ExistingWorkPolicy.REPLACE,
+        ExistingWorkPolicy.KEEP,
         workRequest
       )
     }
-
   }
 
+  /**
+   * Background worker that fetches updates from the bot API and processes commands.
+   *
+   * @return Result indicating success or failure.
+   */
   override fun doWork(): Result {
     val botApiImpl = BotApiImpl(applicationContext)
-    logi(TAG, "Routine Started")
+    logi(TAG, "Routine Started, listening to chatId: ${BotApiImpl.defaultChatId}.")
+
     try {
-      botApiImpl.getUpdates(onSuccess = { updateList ->
-        if (!updateList.isEmpty() && updateList.first().message != null) {
-          CommandProcessor.process(
-            command = updateList.first().message?.text.orEmpty(),
-            expect = "getinfo"
-          ) {
-            val batteryLevel = getBatteryLevel()
-            botApiImpl.sendMessage(text = batteryLevel)
+      botApiImpl.getUpdates(
+        onSuccess = { updateList ->
+          if (updateList.isNotEmpty()) {
+            handleUpdate(updateList.last(), botApiImpl)
           }
-        }
-      })
-    } catch (_: Exception) {
+        },
+        onHttpError = { e ->
+          Log.e(TAG, "doWork: HttpException: ${e.stackTraceToString()}")
+        },
+      )
+    } catch (e: Exception) {
+      loge(TAG, "Exception in doWork: ${e.stackTraceToString()}")
     }
-    scheduleOneTimeWork(applicationContext) // 任务完成后安排下一次执行
+
+    // Schedule next execution
+    scheduleOneTimeWork(applicationContext)
     return Result.success()
   }
 
-  private fun getBatteryLevel(): String {
-    val batteryStatus =
-      applicationContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-    val level = batteryStatus?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
-    val scale = batteryStatus?.getIntExtra(BatteryManager.EXTRA_SCALE, -1) ?: -1
-    val batteryPct = level * 100 / scale.toFloat()
+  /**
+   * Handles a single update from the bot API.
+   *
+   * @param update The update received from the bot API.
+   * @param botApiImpl Instance of the bot API for sending messages.
+   */
+  private fun handleUpdate(update: Update, botApiImpl: BotApiImpl) {
+    val message = update.message ?: return
+    val sender = message.chat.id
+    val updateId = update.updateId
 
-    return "${applicationContext.getString(R.string.battery_level)}: $batteryPct%"
+    if (sender != BotApiImpl.defaultChatId) {
+      logi(TAG, "Ignoring message from chatId: $sender (Expected: ${BotApiImpl.defaultChatId})")
+      return
+    }
+
+    if (lastUpdate == updateId) {
+      logi(TAG, "Duplicate update detected: $updateId")
+      return
+    }
+
+    lastUpdate = updateId
+    logi(TAG, "Processing new update: $updateId from chatId: $sender")
+
+    CommandHandler.processCommand(message.text.orEmpty(), botApiImpl, applicationContext)
   }
 }

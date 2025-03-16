@@ -5,28 +5,31 @@ import android.provider.Telephony.Sms
 import android.util.Log
 import uk.kagurach.message2TG.util.loge
 
-fun readMessage(ctx: Context): List<String> {
+/**
+ * Reads the latest SMS messages from the device's inbox.
+ *
+ * @param ctx The context used to access the content resolver.
+ * @param count The maximum number of messages to retrieve (default is 10).
+ * @return A list of pairs containing the sender's phone number and message body.
+ */
+fun readMessage(ctx: Context, count: Int = 10): List<Pair<String, String>> {
+  val result = mutableListOf<Pair<String, String>>()
+
   val cursor = ctx.contentResolver.query(
     Sms.CONTENT_URI,
-    null, null, null
+    arrayOf(Sms.ADDRESS, Sms.BODY), // Only query necessary columns for efficiency
+    null, null, "${Sms.DATE} DESC LIMIT $count" // Order by date and limit results
   )
 
-  val result = mutableListOf<String>()
-
-  if (cursor != null) {
-    cursor.moveToFirst()
-
-    do {
-      val address = cursor.getString(cursor.getColumnIndexOrThrow(Sms.ADDRESS))
-      val body = cursor.getString(cursor.getColumnIndexOrThrow(Sms.BODY))
-      val id = cursor.getString(cursor.getColumnIndexOrThrow(Sms._ID))
-      result.add("$id: Sender: $address\nMessage: $body")
-    } while (cursor.moveToNext() && result.size < 10)
-
-    cursor.close()
-  } else {
-    loge("ReadMessage", "Cannot initialize cursor to read SMS")
-  }
+  cursor?.use {
+    if (it.moveToFirst()) { // Ensure there's at least one result
+      do {
+        val address = it.getString(it.getColumnIndexOrThrow(Sms.ADDRESS))
+        val body = it.getString(it.getColumnIndexOrThrow(Sms.BODY))
+        result.add(address to body)
+      } while (it.moveToNext() && result.size < count)
+    }
+  } ?: loge("ReadMessage", "Failed to query SMS content")
 
   return result
 }
