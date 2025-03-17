@@ -11,13 +11,20 @@ import uk.kagurach.message2TG.util.formatMessage
 import uk.kagurach.message2TG.util.logi
 import uk.kagurach.tgbotapi.BotApiImpl
 import uk.kagurach.tgbotapi.ParseMode
+import java.security.MessageDigest
 import java.util.Calendar
+import androidx.core.content.edit
 
 class NewMessageHandler : BroadcastReceiver() {
 
+  companion object{
+    @JvmStatic
+    private val TAG = "NewMessageHandler"
+  }
+
   override fun onReceive(context: Context?, intent: Intent?) {
     if (context == null || intent?.action != Telephony.Sms.Intents.SMS_RECEIVED_ACTION) {
-      logi("NewMessageHandler", "Received unknown or null intent")
+      logi(TAG, "Received unknown or null intent")
       return
     }
 
@@ -28,6 +35,20 @@ class NewMessageHandler : BroadcastReceiver() {
 
     val sender = messages[0].originatingAddress ?: "Unknown"
     val messageText = messages.joinToString("") { it.messageBody }
+    val messageTime = messages[0].timestampMillis
+
+    // 计算消息哈希值
+    val messageHash = hashMessage(sender, messageText, messageTime)
+    val sharedPreferences = context.getSharedPreferences("message_prefs", Context.MODE_PRIVATE)
+
+    // 检查是否已处理过该消息
+    if (sharedPreferences.getString("last_message_hash", "") == messageHash) {
+      logi(TAG, "Duplicate message detected, ignoring")
+      return
+    }
+
+    // 记录新的消息哈希值
+    sharedPreferences.edit { putString("last_message_hash", messageHash) }
 
     val botApiImpl = BotApiImpl(context) // 局部初始化，避免 `lateinit`
     val settingStorage = SettingStorage(context)
@@ -43,6 +64,18 @@ class NewMessageHandler : BroadcastReceiver() {
         parseMode = ParseMode.MARKDOWN
       )
     }
+
+    // 最后顺便把 CommandWorker 唤醒一下
+    CommandWorker.scheduleOneTimeWork(context)
+  }
+
+  /**
+   * 计算消息的哈希值，防止重复发送
+   */
+  private fun hashMessage(sender: String, message: String, messageTime: Long): String {
+    val input = "$sender:$message:$messageTime"
+    val bytes = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
+    return bytes.joinToString("") { "%02x".format(it) }
   }
 
   /**

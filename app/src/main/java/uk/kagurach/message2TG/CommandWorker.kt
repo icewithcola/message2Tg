@@ -43,7 +43,7 @@ class CommandWorker(context: Context, params: WorkerParameters) : Worker(context
 
       WorkManager.getInstance(context).enqueueUniqueWork(
         TAG,
-        ExistingWorkPolicy.KEEP,
+        ExistingWorkPolicy.APPEND_OR_REPLACE,
         workRequest
       )
     }
