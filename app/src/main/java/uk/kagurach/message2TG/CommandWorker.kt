@@ -2,6 +2,11 @@ package uk.kagurach.message2TG
 
 import android.content.Context
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
@@ -9,6 +14,12 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import uk.kagurach.message2TG.util.CommandHandler
 import uk.kagurach.message2TG.util.loge
 import uk.kagurach.message2TG.util.logi
@@ -19,7 +30,6 @@ import java.util.concurrent.TimeUnit
 class CommandWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
   companion object {
     const val TAG = "CommandWorker"
-    var lastUpdate = 0L
 
     fun scheduleOneTimeWork(context: Context) {
       val workRequest = OneTimeWorkRequestBuilder<CommandWorker>()
@@ -78,6 +88,8 @@ class CommandWorker(context: Context, params: WorkerParameters) : Worker(context
     val message = update.message ?: return
     val sender = message.chat.id
     val updateId = update.updateId
+    val storage = CommandWorkerStorage(applicationContext)
+    val lastUpdate = storage.get(storage.lastUpdate)
 
     if (sender != BotApiImpl.defaultChatId) {
       logi(TAG, "Ignoring message from chatId: $sender (Expected: ${BotApiImpl.defaultChatId})")
@@ -89,9 +101,31 @@ class CommandWorker(context: Context, params: WorkerParameters) : Worker(context
       return
     }
 
-    lastUpdate = updateId
+    storage.set(storage.lastUpdate, updateId)
     logi(TAG, "Processing new update: $updateId from chatId: $sender")
 
     CommandHandler.processCommand(message.text.orEmpty(), botApiImpl, applicationContext)
   }
+}
+
+val Context.commandWorkerStorage: DataStore<Preferences> by preferencesDataStore(name = "command_worker")
+
+class CommandWorkerStorage(private val context: Context) {
+  val lastUpdate = longPreferencesKey("last_update")
+
+  fun <T> get(key: Preferences.Key<T>): T? =
+    runBlocking {
+      context.commandWorkerStorage.data
+        .map { value ->
+          value[key]
+        }
+        .first()
+    }
+
+  fun <T> set(key: Preferences.Key<T>, value: T) =
+    CoroutineScope(Dispatchers.Default).launch {
+      context.commandWorkerStorage.edit {
+        it[key] = value
+      }
+    }
 }
