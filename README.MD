@@ -14,6 +14,10 @@ Simple Message Forwarder is an application for forwarding SMS to Telegram with i
 - Fill `Chat Id` (can be filled automatically by clicking button and send any message to the bot)
 - Press `Go!` Button. App will send you a message and service will run background
 
+## Commands
+- `/getinfo` Get current battery status.
+- `/getLastMessage <1..5>` Get last 1 to 5 (inclusive) messages
+
 ## Develop
 Put your key under `./app` directory with name `key.jks`, then fill `local.properties` with
 ```

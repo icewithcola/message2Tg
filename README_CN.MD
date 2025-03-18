@@ -14,6 +14,10 @@ Simple Message Forwarder 是一个将短信转发到 Telegram 的小型软件。
 - 填入 `Chat Id` (亦可点击右边按钮，向您的机器人发送任何消息，该信息可以被自动填入)
 - 点击 `开始` 按钮，服务将会给您发送一个消息，并在后台运行
 
+## 命令
+- `/getinfo` 获取当前手机电量
+- `/getLastMessage <1..5>` 获取最后 1~5 条消息
+
 ## 开发
 把你的密钥放在 `./app` 文件夹下，并命名为 `key.jks`，然后填写 `local.properties`
 ```
