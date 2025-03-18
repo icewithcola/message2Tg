@@ -40,7 +40,7 @@
     </activity>
 
     <receiver android:name="uk.kagurach.message2TG.NewMessageHandler"
-        android:exported="false"
+        android:exported="true"
         android:permission="android.permission.BROADCAST_SMS">
       <intent-filter android:priority="1" >
         <action android:name="android.provider.Telephony.SMS_RECEIVED" />

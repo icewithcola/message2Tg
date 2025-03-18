@@ -22,4 +22,5 @@
   <string name="notification_channel_dscr">保活通知</string>
   <string name="silent_in_night">夜间静音</string>
   <string name="silent_in_night_dscr">将在 23:00 至次日 6:30 发送静音消息</string>
+  <string name="diagnose">进行功能检测</string>
 </resources>

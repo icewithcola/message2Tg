@@ -16,7 +16,7 @@ android {
     applicationId = "uk.kagurach.message2TG"
     minSdk = 27
     targetSdk = 35
-    versionName = "1.5.2" // Should be majorV.functionV.subV
+    versionName = "1.5.3" // Should be majorV.functionV.subV
     versionCode = versionName!!.replace(".","").toInt()
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

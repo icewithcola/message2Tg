@@ -8,12 +8,26 @@ import uk.kagurach.message2TG.SettingStorage
 private fun String.promiseValue(): String {
   return this
     .replace("-", "\\-")
-    .replace("!","\\!")
+    .replace("!", "\\!")
     .replace("_", "\\_")
     .replace("*", "\\*")
     .replace("[", "\\[")
+    .replace("]", "\\]")
+    .replace("(", "\\(")
+    .replace(")", "\\)")
+    .replace("~", "\\~")
     .replace("`", "\\`")
+    .replace(">", "\\>")
+    .replace("#", "\\#")
+    .replace("+", "\\+")
+    .replace("=", "\\=")
+    .replace("|", "\\|")
+    .replace("{", "\\{")
+    .replace("}", "\\}")
+    .replace(".", "\\.")
+    .replace(",", "\\,") // 保险起见
 }
+
 
 fun formatMessage(context: Context, sender: String, text: String): String {
   val settingStorage = SettingStorage(context)

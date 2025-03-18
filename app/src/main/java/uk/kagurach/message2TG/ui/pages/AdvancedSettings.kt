@@ -7,8 +7,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -17,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import uk.kagurach.message2TG.R
 import uk.kagurach.message2TG.SettingStorage
+import uk.kagurach.message2TG.diagnose.DiagnoseHelper
 import uk.kagurach.message2TG.ui.compose.Setting
 
 @Composable
@@ -34,6 +43,7 @@ fun AdvancedSettings(context: Context) {
   )
 
   val settingStorage = SettingStorage(context)
+  var diagnoseMessage by remember { mutableStateOf("") }
 
   Column(
     modifier = Modifier
@@ -58,13 +68,24 @@ fun AdvancedSettings(context: Context) {
       name = context.getString(R.string.use_foreground_service),
       description = context.getString(R.string.use_foreground_service_dscr),
       initialState = settingStorage.get(settingStorage.useForegroundService) == true
-    ){ settingStorage.set(settingStorage.useForegroundService,it) }
+    ) { settingStorage.set(settingStorage.useForegroundService, it) }
 
     setting.BooleanSetting(
       name = context.getString(R.string.silent_in_night),
       description = context.getString(R.string.silent_in_night_dscr),
       initialState = settingStorage.get(settingStorage.silentInNight) == true
-    ){ settingStorage.set(settingStorage.silentInNight,it) }
+    ) { settingStorage.set(settingStorage.silentInNight, it) }
+
+
+    TextButton(
+      modifier = Modifier.padding(start = 5.dp), onClick = {
+        val result = DiagnoseHelper.diagnose(context)
+        diagnoseMessage = result.joinToString()
+      }) {
+      Text(text = stringResource(R.string.diagnose))
+    }
+
+    Text(text = diagnoseMessage, fontSize = 14.sp, color = Color.Gray, modifier = Modifier)
 
   }
 }

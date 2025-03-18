@@ -82,7 +82,7 @@ class BotApiImpl {
       try {
         response = service.getMe(token ?: defaultToken)
       } catch (exception: HttpException) {
-        httpExceptionHandler(exception, onHttpError)
+        httpExceptionHandler(exception, onHttpError, exception.response()?.errorBody()?.string())
         return@launch
       }
 
@@ -115,7 +115,7 @@ class BotApiImpl {
           parseMode.getName()
         )
       } catch (exception: HttpException) {
-        httpExceptionHandler(exception, onHttpError)
+        httpExceptionHandler(exception, onHttpError, exception.response()?.errorBody()?.string())
         return@launch
       } catch (exception: SSLException) {
         loge(TAG, "SSLException:\n${exception.stackTrace}")
@@ -150,7 +150,7 @@ class BotApiImpl {
       try {
         response = service.getUpdates(token ?: defaultToken, offset, limit, timeout)
       } catch (exception: HttpException) {
-        httpExceptionHandler(exception, onHttpError)
+        httpExceptionHandler(exception, onHttpError, exception.response()?.errorBody()?.string())
         return@launch
       }
 
@@ -171,8 +171,10 @@ class BotApiImpl {
   private inline fun httpExceptionHandler(
     exception: HttpException,
     onHttpError: ((HttpException) -> Unit),
+    response: String? = null
   ) {
-    loge(TAG, exception.message.toString())
+    loge(TAG, (exception.message.toString() + response))
+
     onHttpError.invoke(exception)
   }
 
