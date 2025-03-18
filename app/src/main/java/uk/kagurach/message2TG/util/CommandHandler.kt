@@ -58,7 +58,7 @@ object CommandHandler {
       if (messages.isNotEmpty()) {
         val responseText = messages
           .mapIndexed { idx, (sender, msg) -> formatMessage(context, sender, msg) }
-          .joinToString("\n")
+          .joinToString("\n\n")
 
         botApiImpl.sendMessage(text = responseText, parseMode = ParseMode.MARKDOWN)
       }
