@@ -20,6 +20,7 @@ class SettingStorage(private val context: Context) {
   val extractVerifyCode = booleanPreferencesKey("extract_verify_code")
   val useForegroundService = booleanPreferencesKey("use_foreground_service")
   val silentInNight = booleanPreferencesKey("silent_in_night")
+  val useCommand = booleanPreferencesKey("use_command")
 
   fun <T> get(key: Preferences.Key<T>): T? =
     runBlocking {

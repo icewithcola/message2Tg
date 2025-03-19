@@ -76,6 +76,11 @@ fun AdvancedSettings(context: Context) {
       initialState = settingStorage.get(settingStorage.silentInNight) == true
     ) { settingStorage.set(settingStorage.silentInNight, it) }
 
+    setting.BooleanSetting(
+      name = context.getString(R.string.use_command),
+      description = context.getString(R.string.use_command_dscr),
+      initialState = settingStorage.get(settingStorage.useCommand) != false
+    ) { settingStorage.set(settingStorage.useCommand, it) }
 
     TextButton(
       modifier = Modifier.padding(start = 5.dp), onClick = {

@@ -1,19 +1,9 @@
 package uk.kagurach.tgbotapi
 
-/** Validate if all args are not null or
- *  default value has initialized
+/**
+ * Validate if all args are not null or default value has initialized.
  */
-fun validateArgNotNullOrHasDefault(isInitialized: Boolean, vararg args: Any?): Boolean {
-  if (isInitialized) {
-    return true
-  }
-  args.forEach {
-    if (it == null) {
-      return false
-    }
-  }
-  return true
-}
+fun validateArgNotNullOrHasDefault(isInitialized: Boolean, vararg args: Any?): Boolean = isInitialized || null !in args
 
 fun validateBotToken(token: String): Boolean =
   token.matches("^[0-9]{8,10}:[a-zA-Z0-9_-]{35}\$".toRegex())

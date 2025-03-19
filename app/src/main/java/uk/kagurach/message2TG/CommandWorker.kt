@@ -32,6 +32,10 @@ class CommandWorker(context: Context, params: WorkerParameters) : Worker(context
     const val TAG = "CommandWorker"
 
     fun scheduleOneTimeWork(context: Context) {
+      val settingStorage = SettingStorage(context)
+      val useCommand = settingStorage.get(settingStorage.useCommand) != false
+      if (!useCommand) { return } // Function disabled
+
       val workRequest = OneTimeWorkRequestBuilder<CommandWorker>()
         .setInitialDelay(90, TimeUnit.SECONDS) // 1.5 分钟后执行
         .setConstraints(

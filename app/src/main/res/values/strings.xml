@@ -21,5 +21,7 @@
   <string name="notification_channel_dscr">Keep alive notification</string>
   <string name="silent_in_night">Silent In Night</string>
   <string name="silent_in_night_dscr">Message will not be notified from 23:00 until 6:30 next day</string>
+  <string name="use_command">Use Commands</string>
+  <string name="use_command_dscr">Allow app read commands from telegram, this may increase battery usage</string>
   <string name="diagnose">Perform Diagnose</string>
 </resources>
