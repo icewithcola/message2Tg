@@ -6,7 +6,7 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.provider.Telephony.Sms
 import uk.kagurach.message2TG.R
-
+import uk.kagurach.message2TG.util.LogUtil.loge
 
 /**
  * System Utilities.

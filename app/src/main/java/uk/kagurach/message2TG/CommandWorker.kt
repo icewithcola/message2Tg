@@ -21,8 +21,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import uk.kagurach.message2TG.util.CommandHandler
-import uk.kagurach.message2TG.util.loge
-import uk.kagurach.message2TG.util.logi
+import uk.kagurach.message2TG.util.LogUtil.loge
+import uk.kagurach.message2TG.util.LogUtil.logi
 import uk.kagurach.tgbotapi.BotApiImpl
 import uk.kagurach.tgbotapi.typeadapter.Update
 import java.util.concurrent.TimeUnit
@@ -70,7 +70,7 @@ class CommandWorker(context: Context, params: WorkerParameters) : Worker(context
           }
         },
         onHttpError = { e ->
-          Log.e(TAG, "doWork: HttpException: ${e.stackTraceToString()}")
+          loge(TAG, "doWork: HttpException: ${e.stackTraceToString()}")
         },
       )
     } catch (e: Exception) {

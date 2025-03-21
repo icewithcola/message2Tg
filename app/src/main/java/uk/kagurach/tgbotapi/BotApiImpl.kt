@@ -10,7 +10,7 @@ import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import uk.kagurach.message2TG.BotStorage
-import uk.kagurach.message2TG.util.loge
+import uk.kagurach.message2TG.util.LogUtil.loge
 import uk.kagurach.tgbotapi.typeadapter.Message
 import uk.kagurach.tgbotapi.typeadapter.MessageReturned
 import uk.kagurach.tgbotapi.typeadapter.Returned

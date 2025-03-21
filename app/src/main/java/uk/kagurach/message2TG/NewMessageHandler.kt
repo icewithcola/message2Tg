@@ -4,16 +4,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
+import androidx.core.content.edit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import uk.kagurach.message2TG.util.LogUtil.logi
 import uk.kagurach.message2TG.util.formatMessage
-import uk.kagurach.message2TG.util.logi
 import uk.kagurach.tgbotapi.BotApiImpl
 import uk.kagurach.tgbotapi.ParseMode
 import java.security.MessageDigest
 import java.util.Calendar
-import androidx.core.content.edit
 
 class NewMessageHandler : BroadcastReceiver() {
 

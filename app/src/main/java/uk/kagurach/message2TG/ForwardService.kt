@@ -9,7 +9,7 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.ServiceCompat
-import uk.kagurach.message2TG.util.logi
+import uk.kagurach.message2TG.util.LogUtil.logi
 
 class ForwardService : Service() {
   companion object {

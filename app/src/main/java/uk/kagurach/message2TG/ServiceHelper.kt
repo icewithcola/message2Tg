@@ -2,8 +2,8 @@ package uk.kagurach.message2TG
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.core.content.ContextCompat
+import uk.kagurach.message2TG.util.LogUtil.logi
 import uk.kagurach.tgbotapi.BotApiImpl
 
 /** testAndStartService
@@ -12,7 +12,7 @@ import uk.kagurach.tgbotapi.BotApiImpl
 fun testAndStartService(context: Context, skipChatIdCheck: Boolean = false,startForegroundService: Boolean = false) {
   if (!skipChatIdCheck) {
     if (!validateBotToken(context)) {
-      Log.i("ServiceHelper", "Bot token is wrong")
+      logi("ServiceHelper", "Bot token is wrong")
       return
     }
   }

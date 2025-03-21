@@ -1,6 +1,7 @@
 package uk.kagurach.message2TG.util
 
 import android.content.Context
+import uk.kagurach.message2TG.util.LogUtil.logi
 import uk.kagurach.message2TG.util.SystemHelper.getBatteryLevel
 import uk.kagurach.message2TG.util.SystemHelper.readMessage
 import uk.kagurach.tgbotapi.BotApiImpl
