@@ -8,7 +8,9 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalContext
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorScheme = darkColorScheme(
   primary = Purple80,
@@ -49,6 +51,21 @@ fun ThemeWrapper(
     darkTheme -> DarkColorScheme
     else -> LightColorScheme
   }
+
+  val systemUiController = rememberSystemUiController()
+  val useDarkIcons = !isSystemInDarkTheme()
+
+  SideEffect {
+    systemUiController.setStatusBarColor(
+      color = colorScheme.surface,
+      darkIcons = useDarkIcons
+    )
+    systemUiController.setNavigationBarColor(
+      color = colorScheme.surface,
+      darkIcons = useDarkIcons
+    )
+  }
+
 
   MaterialTheme(
     colorScheme = colorScheme,

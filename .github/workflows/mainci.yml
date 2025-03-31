@@ -43,20 +43,31 @@ jobs:
     if: startsWith(github.event.head_commit.message, '[Release]')
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download built APK
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: release-apk
-          path: app/build/outputs/apk/release/
+
+      - name: Unzip apk
+        run: unzip release-apk.zip
+
+      - name: Get Version
+        id: get_version
+        run: |
+          VERSION=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ github.run_number }}
-          name: Release v${{ github.run_number }}
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
           body: "New APK release"
           draft: false
           prerelease: false
-          files: app/build/outputs/apk/release/app-release.apk
+          files: ./app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

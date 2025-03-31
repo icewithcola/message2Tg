@@ -52,7 +52,7 @@ android {
     applicationId = "uk.kagurach.message2TG"
     minSdk = 27
     targetSdk = 35
-    versionName = "1.5.4" // Should be majorV.functionV.subV
+    versionName = "1.5.5"
     versionCode = versionName!!.replace(".","").toInt()
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -113,6 +113,7 @@ dependencies {
   implementation(libs.androidx.material3)
   implementation(libs.androidx.datastore.preferences)
   implementation(libs.androidx.work.runtime.ktx)
+  implementation(libs.accompanist.systemuicontroller)
 
   implementation(libs.retrofit)
   implementation(libs.converter.moshi)
