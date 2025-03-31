@@ -84,8 +84,9 @@ fun AdvancedSettings(context: Context) {
 
     TextButton(
       modifier = Modifier.padding(start = 5.dp), onClick = {
-        val result = DiagnoseHelper.diagnose(context)
-        diagnoseMessage = result.joinToString()
+        diagnoseMessage =
+          DiagnoseHelper.diagnose(context).joinToString() +
+          DiagnoseHelper.buildInfo().joinToString()
       }) {
       Text(text = stringResource(R.string.diagnose))
     }

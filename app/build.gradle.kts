@@ -1,4 +1,40 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.text.SimpleDateFormat
+import java.util.Date
+
+val generateVersionKt = tasks.register("generateVersionKt") {
+  val outputDir = layout.projectDirectory.dir("src/main/java/uk/kagurach/message2TG/gen")
+  val outputFile = file("$outputDir/Version.kt")
+
+  outputs.file(outputFile)
+
+  // 扩展函数用于执行 shell 命令
+  fun String.runCommand(): String = ProcessBuilder(split(" "))
+    .redirectOutput(ProcessBuilder.Redirect.PIPE)
+    .start().inputStream.bufferedReader().readText().trim()
+
+  doLast {
+    val commitId = "git rev-parse --short HEAD".runCommand()
+    val buildTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
+
+    val versionKtContent = """
+            package uk.kagurach.message2TG.gen
+
+            object Version {
+                const val BUILD_TIME = "$buildTime"
+                const val GIT_COMMIT_ID = "$commitId"
+            }
+        """.trimIndent()
+
+    outputFile.writeText(versionKtContent)
+  }
+}
+
+// 确保在编译前生成 Version.kt
+tasks.named("preBuild") {
+  dependsOn(generateVersionKt)
+}
+
 
 plugins {
   alias(libs.plugins.android.application)
