@@ -23,23 +23,14 @@ jobs:
       - name: Grant execution permissions for Gradle
         run: chmod +x gradlew
 
-      - name: Build Release APK
-        run: ./gradlew assembleRelease
-
-      - name: Sign APK
+      - name: Export Keystore password
         run: |
-          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \
-            -keystore ${{ github.workspace }}/app/key.jks \
-            -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
-            -keypass ${{ secrets.KEY_PASSWORD }} \
-            app/build/outputs/apk/release/app-release-unsigned.apk \
-            ${{ secrets.KEY_ALIAS }}
+          export KEYSTORE_PASS=${{ secrets.KEYSTORE_PASSWORD }} \
+          export ALIAS_NAME=${{ secrets.KEY_ALIAS }} \
+          export ALIAS_PASS=${{ secrets.KEY_PASSWORD }}
 
-      - name: Verify APK signature
-        run: jarsigner -verify -verbose -certs app/build/outputs/apk/release/app-release-unsigned.apk
-
-      - name: Rename APK
-        run: mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release.apk
+      - name: Build Release APK
+        run: ./gradlew :app:assembleRelease
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
