@@ -25,9 +25,9 @@ jobs:
 
       - name: Export Keystore password
         run: |
-          export KEYSTORE_PASS=${{ secrets.KEYSTORE_PASSWORD }} \
-          export ALIAS_NAME=${{ secrets.KEY_ALIAS }} \
-          export ALIAS_PASS=${{ secrets.KEY_PASSWORD }}
+          export KEYSTORE_PASS="${{ secrets.KEYSTORE_PASSWORD }}" \
+          export ALIAS_NAME="${{ secrets.KEY_ALIAS }}" \
+          export ALIAS_PASS="${{ secrets.KEY_PASSWORD }}"
 
       - name: Build Release APK
         run: ./gradlew :app:assembleRelease
