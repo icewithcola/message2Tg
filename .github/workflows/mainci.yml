@@ -25,9 +25,9 @@ jobs:
 
       - name: Build Release APK
         run: |
-          export KEYSTORE_PASS="${{ secrets.KEYSTORE_PASSWORD }}" \
-          export ALIAS_NAME="${{ secrets.KEY_ALIAS }}" \
-          export ALIAS_PASS="${{ secrets.KEY_PASSWORD }}" \
+          export KEYSTORE_PASS="${{ secrets.KEYSTORE_PASSWORD }}";
+          export ALIAS_NAME="${{ secrets.KEY_ALIAS }}";
+          export ALIAS_PASS="${{ secrets.KEY_PASSWORD }}";
           ./gradlew :app:assembleRelease
 
       - name: Upload APK artifact
