@@ -23,14 +23,12 @@ jobs:
       - name: Grant execution permissions for Gradle
         run: chmod +x gradlew
 
-      - name: Export Keystore password
+      - name: Build Release APK
         run: |
           export KEYSTORE_PASS="${{ secrets.KEYSTORE_PASSWORD }}" \
           export ALIAS_NAME="${{ secrets.KEY_ALIAS }}" \
-          export ALIAS_PASS="${{ secrets.KEY_PASSWORD }}"
-
-      - name: Build Release APK
-        run: ./gradlew :app:assembleRelease
+          export ALIAS_PASS="${{ secrets.KEY_PASSWORD }}" \
+          ./gradlew :app:assembleRelease
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
