@@ -51,8 +51,9 @@ jobs:
         with:
           name: release-apk
 
-      - name: Unzip apk
-        run: unzip release-apk.zip
+      - name: Show files
+        run: |
+          ls -al1
 
       - name: Get Version
         id: get_version
