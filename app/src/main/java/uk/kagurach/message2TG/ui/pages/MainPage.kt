@@ -3,6 +3,10 @@ package uk.kagurach.message2TG.ui.pages
 import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Context.RECEIVER_EXPORTED
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -33,6 +37,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat.registerReceiver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,17 +46,18 @@ import uk.kagurach.message2TG.R
 import uk.kagurach.message2TG.SettingStorage
 import uk.kagurach.message2TG.testAndStartService
 import uk.kagurach.message2TG.ui.compose.Inputer
+import uk.kagurach.message2TG.util.BatteryReceiver
 import uk.kagurach.tgbotapi.BotApiImpl
 import uk.kagurach.tgbotapi.validateBotToken
 import uk.kagurach.tgbotapi.validatePartialBotToken
 
 @Composable
-fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
+fun MainPage(context: Context, defaultToken: String, defaultChatId: Long) {
   var token by remember { mutableStateOf(defaultToken) }
   var chatId by remember { mutableLongStateOf(defaultChatId) }
   var tokenVisibility by remember { mutableStateOf(false) }
 
-  val settingStorage = SettingStorage(ctx)
+  val settingStorage = SettingStorage(context)
 
   val inputer = Inputer(
     inputTextStyle = TextStyle(
@@ -85,14 +91,14 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
   ) {
     inputer.InputBox(
       value = token,
-      labelText = getString(ctx, R.string.bot_token),
+      labelText = getString(context, R.string.bot_token),
       iconPainter = painterResource(R.drawable.content_paste),
       onValueChange = {
         if (it.isEmpty() || validatePartialBotToken(it))
           token = it
       },
       iconButtonOnClick = {
-        val clipboard = getSystemService(ctx, ClipboardManager::class.java)
+        val clipboard = getSystemService(context, ClipboardManager::class.java)
         if (clipboard == null ||
           clipboard.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN) != true
         ) {
@@ -104,7 +110,7 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
           if (validateBotToken(data)) {
             token = data
           } else {
-            Toast.makeText(ctx, getString(ctx, R.string.no_token_in_clipboard), Toast.LENGTH_SHORT)
+            Toast.makeText(context, getString(context, R.string.no_token_in_clipboard), Toast.LENGTH_SHORT)
               .show()
           }
         }
@@ -124,7 +130,7 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
         -1L -> "-"
         else -> chatId.toString()
       },
-      labelText = getString(ctx, R.string.chat_id),
+      labelText = getString(context, R.string.chat_id),
       iconPainter = painterResource(R.drawable.track_changes),
       keyboardType = KeyboardType.Decimal,
       onValueChange = { newInput ->
@@ -140,7 +146,7 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
         if (token.isEmpty()) {
           return@InputBox
         }
-        Toast.makeText(ctx, getString(ctx, R.string.send_message_to_bot), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, getString(context, R.string.send_message_to_bot), Toast.LENGTH_SHORT).show()
         val botApiImpl = BotApiImpl(token, chatId)
         botApiImpl.getUpdates(
           limit = 20,
@@ -148,8 +154,8 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
           onHttpError = { e ->
             CoroutineScope(Dispatchers.Main).launch {
               Toast.makeText(
-                ctx, getString(
-                  ctx, when (e.code()) {
+                context, getString(
+                  context, when (e.code()) {
                     400 -> R.string.need_start_bot
                     401, 404 -> R.string.wrong_bot_token
                     else -> throw e
@@ -172,15 +178,15 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
 
     Button(onClick = {
       val botApiImpl = BotApiImpl(token, chatId)
-      val botStorage = BotStorage(ctx)
+      val botStorage = BotStorage(context)
       botApiImpl.sendMessage(
-        text = getString(ctx, R.string.connect_success),
+        text = getString(context, R.string.connect_success),
         disableNotification = settingStorage.get(settingStorage.sendSilentMessageOnTest),
         onHttpError = { e ->
           CoroutineScope(Dispatchers.Main).launch {
             Toast.makeText(
-              ctx, getString(
-                ctx, when (e.code()) {
+              context, getString(
+                context, when (e.code()) {
                   400 -> R.string.need_start_bot
                   401, 404 -> R.string.wrong_bot_token
                   else -> throw e
@@ -191,14 +197,28 @@ fun MainPage(ctx: Context, defaultToken: String, defaultChatId: Long) {
         },
         onSuccess = {
           botStorage.setDefaults(token, chatId)
-          testAndStartService(ctx,
+          testAndStartService(context,
             true,
             (settingStorage.get(settingStorage.useForegroundService) == true)
           )
+          // 注册 BatteryReciever
+          if (settingStorage.get(settingStorage.batteryNotification) == true){
+            val intentFilter = IntentFilter().apply {
+              addAction(Intent.ACTION_BATTERY_LOW)
+              addAction(Intent.ACTION_POWER_CONNECTED)
+              addAction(Intent.ACTION_POWER_DISCONNECTED)
+            }
+            val receiver = BatteryReceiver()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+              context.registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED)
+            } else {
+              context.registerReceiver(receiver, intentFilter)
+            }
+          }
         }
       )
     }) {
-      Text(text = getString(ctx, R.string.start_service))
+      Text(text = getString(context, R.string.start_service))
     }
   }
 }

@@ -26,4 +26,9 @@
   <string name="use_command_dscr">允许程序在后台接受命令，这可能会增加用电量</string>
 
   <string name="diagnose">进行功能检测</string>
+  <string name="charger_connected">已连接充电器</string>
+  <string name="charger_disconnected">已断开充电器</string>
+  <string name="low_battery">"电池电量低,当前电量: "</string>
+  <string name="battery_notification">发送电量信息</string>
+  <string name="battery_notification_dscr">当电池电量低,或者连接/断开充电器的时候发送提醒消息</string>
 </resources>

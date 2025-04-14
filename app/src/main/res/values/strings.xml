@@ -24,4 +24,9 @@
   <string name="use_command">Use Commands</string>
   <string name="use_command_dscr">Allow app read commands from telegram, this may increase battery usage</string>
   <string name="diagnose">Perform Diagnose</string>
+  <string name="charger_connected">Connected to charger</string>
+  <string name="charger_disconnected">Disconnected from charger</string>
+  <string name="low_battery">"Battery is low, current battery level is "</string>
+  <string name="battery_notification">Send Battery Status</string>
+  <string name="battery_notification_dscr">When battery is low, or charger is connected/disconnected, send a message</string>
 </resources>

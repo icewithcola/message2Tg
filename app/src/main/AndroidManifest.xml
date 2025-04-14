@@ -30,7 +30,6 @@
     <activity
         android:name="uk.kagurach.message2TG.MainActivity"
         android:exported="true"
-        android:label="@string/app_name"
         android:theme="@style/Theme.Message2TG">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />

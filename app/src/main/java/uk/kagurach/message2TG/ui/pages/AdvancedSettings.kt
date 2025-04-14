@@ -82,6 +82,12 @@ fun AdvancedSettings(context: Context) {
       initialState = settingStorage.get(settingStorage.useCommand) != false
     ) { settingStorage.set(settingStorage.useCommand, it) }
 
+    setting.BooleanSetting(
+      name = context.getString(R.string.battery_notification),
+      description = context.getString(R.string.battery_notification_dscr),
+      initialState = settingStorage.get(settingStorage.batteryNotification) == true
+    ) { settingStorage.set(settingStorage.batteryNotification, it) }
+
     TextButton(
       modifier = Modifier.padding(start = 5.dp), onClick = {
         diagnoseMessage =

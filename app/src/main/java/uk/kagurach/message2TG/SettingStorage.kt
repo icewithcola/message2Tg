@@ -21,6 +21,7 @@ class SettingStorage(private val context: Context) {
   val useForegroundService = booleanPreferencesKey("use_foreground_service")
   val silentInNight = booleanPreferencesKey("silent_in_night")
   val useCommand = booleanPreferencesKey("use_command")
+  val batteryNotification = booleanPreferencesKey("battery_notification")
 
   fun <T> get(key: Preferences.Key<T>): T? =
     runBlocking {
