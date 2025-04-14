@@ -60,6 +60,7 @@ jobs:
         run: |
           VERSION=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo $VERSION >> ./version
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -69,6 +70,8 @@ jobs:
           body: "New APK release"
           draft: false
           prerelease: false
-          files: ./app-release.apk
+          files: |
+            ./app-release.apk
+            ./version
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
