@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,10 @@ class SettingStorage(private val context: Context) {
   val silentInNight = booleanPreferencesKey("silent_in_night")
   val useCommand = booleanPreferencesKey("use_command")
   val batteryNotification = booleanPreferencesKey("battery_notification")
+
+  val openAIEndpoint = stringPreferencesKey("openai_endpoint")
+  val openAIKey = stringPreferencesKey("openai_token")
+  val openAIModel = stringPreferencesKey("openai_model")
 
   fun <T> get(key: Preferences.Key<T>): T? =
     runBlocking {

@@ -31,4 +31,11 @@
   <string name="low_battery">"电池电量低,当前电量: "</string>
   <string name="battery_notification">发送电量信息</string>
   <string name="battery_notification_dscr">当电池电量低,或者连接/断开充电器的时候发送提醒消息</string>
+
+  <string name="openai_endpoint">OpenAI 兼容 API 端点</string>
+  <string name="openai_endpoint_dscr">OpenAI 兼容 API 端点, 留空则禁用 AI 验证码提取</string>
+  <string name="openai_key">OpenAI API 密钥</string>
+  <string name="openai_key_dscr">OpenAI API 密钥, 留空则禁用 AI 验证码提取</string>
+  <string name="openai_model">OpenAI 模型</string>
+  <string name="openai_model_dscr">OpenAI 模型, 留空则禁用 AI 验证码提取</string>
 </resources>

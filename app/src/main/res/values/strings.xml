@@ -29,4 +29,10 @@
   <string name="low_battery">"Battery is low, current battery level is "</string>
   <string name="battery_notification">Send Battery Status</string>
   <string name="battery_notification_dscr">When battery is low, or charger is connected/disconnected, send a message</string>
+  <string name="openai_endpoint">OpenAI Compatible API Endpoint</string>
+  <string name="openai_endpoint_dscr">OpenAI compatible API endpoint, leave empty to use disable AI verification code extraction</string>
+  <string name="openai_key">OpenAI API Key</string>
+  <string name="openai_key_dscr">OpenAI API key, leave empty to use disable AI verification code extraction</string>
+  <string name="openai_model">OpenAI Model</string>
+  <string name="openai_model_dscr">OpenAI model to use, leave empty to disable AI verification code extraction</string>
 </resources>

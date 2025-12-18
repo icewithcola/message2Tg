@@ -1,6 +1,9 @@
 package uk.kagurach.message2TG.util
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import uk.kagurach.message2TG.util.LogUtil.logi
 import uk.kagurach.message2TG.util.SystemHelper.getBatteryLevel
 import uk.kagurach.message2TG.util.SystemHelper.readMessage
@@ -57,11 +60,14 @@ object CommandHandler {
     if (messageCount > 0) {
       val messages = readMessage(context, messageCount)
       if (messages.isNotEmpty()) {
-        val responseText = messages
-          .mapIndexed { idx, (sender, msg) -> formatMessage(context, sender, msg) }
-          .joinToString("\n\n")
+        CoroutineScope(Dispatchers.IO).launch {
+          val responseText = messages
+            .mapIndexed { _, (sender, msg) -> formatMessage(context, sender, msg) }
+            .joinToString("\n\n")
 
-        botApiImpl.sendMessage(text = responseText, parseMode = ParseMode.HTML)
+          botApiImpl.sendMessage(text = responseText, parseMode = ParseMode.HTML)
+        }
+
       }
     }
   }

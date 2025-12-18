@@ -2,7 +2,7 @@ package uk.kagurach.message2TG.ui.pages
 
 import android.content.Context
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -47,8 +47,7 @@ fun AdvancedSettings(context: Context) {
 
   Column(
     modifier = Modifier
-      .fillMaxWidth()
-      .fillMaxHeight(0.8f)
+      .fillMaxSize()
       .padding(horizontal = 8.dp)
       .verticalScroll(rememberScrollState())
   ) {
@@ -87,6 +86,24 @@ fun AdvancedSettings(context: Context) {
       description = context.getString(R.string.battery_notification_dscr),
       initialState = settingStorage.get(settingStorage.batteryNotification) == true
     ) { settingStorage.set(settingStorage.batteryNotification, it) }
+
+    setting.StringSetting(
+      name = context.getString(R.string.openai_endpoint),
+      description = context.getString(R.string.openai_endpoint_dscr),
+      initialState = settingStorage.get(settingStorage.openAIEndpoint) ?: ""
+    ) { settingStorage.set(settingStorage.openAIEndpoint, it) }
+
+    setting.StringSetting(
+      name = context.getString(R.string.openai_key),
+      description = context.getString(R.string.openai_key_dscr),
+      initialState = settingStorage.get(settingStorage.openAIKey) ?: ""
+    ) { settingStorage.set(settingStorage.openAIKey, it) }
+
+    setting.StringSetting(
+      name = context.getString(R.string.openai_model),
+      description = context.getString(R.string.openai_model_dscr),
+      initialState = settingStorage.get(settingStorage.openAIModel) ?: ""
+    ) { settingStorage.set(settingStorage.openAIModel, it) }
 
     TextButton(
       modifier = Modifier.padding(start = 5.dp), onClick = {

@@ -40,12 +40,12 @@ data class MessageContent(
 /**
  * Formats message for Telegram with proper markdown escaping
  */
-fun formatMessage(context: Context, sender: String, text: String): String {
+suspend fun formatMessage(context: Context, sender: String, text: String): String {
   val settingStorage = SettingStorage(context)
 
   // Get our verification code if enabled
   val verificationCode = if (settingStorage.get(settingStorage.extractVerifyCode) == true) {
-    extractVerifyCode(text)
+    extractVerifyCode(text, context)
   } else null
   
   val messageContent = MessageContent(
