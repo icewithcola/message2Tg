@@ -61,7 +61,7 @@ object CommandHandler {
           .mapIndexed { idx, (sender, msg) -> formatMessage(context, sender, msg) }
           .joinToString("\n\n")
 
-        botApiImpl.sendMessage(text = responseText, parseMode = ParseMode.MARKDOWN)
+        botApiImpl.sendMessage(text = responseText, parseMode = ParseMode.HTML)
       }
     }
   }

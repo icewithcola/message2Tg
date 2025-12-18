@@ -61,7 +61,7 @@ class NewMessageHandler : BroadcastReceiver() {
       botApiImpl.sendMessage(
         text = formatMessage(context, sender, messageText),
         disableNotification = disableNotification,
-        parseMode = ParseMode.MARKDOWN
+        parseMode = ParseMode.HTML
       )
     }
 
