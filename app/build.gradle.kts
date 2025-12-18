@@ -52,7 +52,7 @@ android {
     applicationId = "uk.kagurach.message2TG"
     minSdk = 27
     targetSdk = 35
-    versionName = "1.5.6"
+    versionName = "1.6.0"
     versionCode = versionName!!.replace(".","").toInt()
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
