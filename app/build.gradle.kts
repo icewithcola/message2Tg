@@ -46,12 +46,12 @@ plugins {
 
 android {
   namespace = "uk.kagurach.message2TG"
-  compileSdk = 35
+  compileSdk = 36
 
   defaultConfig {
     applicationId = "uk.kagurach.message2TG"
     minSdk = 27
-    targetSdk = 35
+    targetSdk = 36
     versionName = "1.6.0"
     versionCode = versionName!!.replace(".","").toInt()
 
@@ -81,11 +81,8 @@ android {
     }
   }
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-  }
-  kotlinOptions {
-    jvmTarget = "17"
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
   }
   buildFeatures {
     compose = true
@@ -111,6 +108,7 @@ dependencies {
   implementation(libs.androidx.ui.graphics)
   implementation(libs.androidx.ui.tooling.preview)
   implementation(libs.androidx.material3)
+  implementation(libs.androidx.compose.material.icons)
   implementation(libs.androidx.datastore.preferences)
   implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.accompanist.systemuicontroller)

@@ -4,10 +4,10 @@ import android.content.Context
 import android.text.TextUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import uk.kagurach.message2TG.SettingStorage
 
@@ -91,7 +91,7 @@ suspend fun extractVerifyCodeWithAI(text: String, endpoint: String, apiKey: Stri
       }
     """.trimIndent()
 
-    val requestBody = RequestBody.create(MediaType.parse("application/json"), jsonBody)
+    val requestBody = jsonBody.toRequestBody("application/json".toMediaTypeOrNull())
     val request = Request.Builder()
       .url("$endpoint/v1/chat/completions")
       .addHeader("Content-Type", "application/json")
@@ -104,7 +104,7 @@ suspend fun extractVerifyCodeWithAI(text: String, endpoint: String, apiKey: Stri
         return@withContext null
       }
       
-      val responseBody = response.body()?.string()
+      val responseBody = response.body?.string()
       if (responseBody != null) {
         val jsonResponse = JSONObject(responseBody)
         val code = jsonResponse.optJSONArray("choices")
