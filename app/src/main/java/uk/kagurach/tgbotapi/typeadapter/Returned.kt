@@ -10,28 +10,28 @@ interface Returned<out T> {
 
 @JsonClass(generateAdapter = true)
 class UserReturned(
-  @Json(name = "ok")
+  @field:Json(name = "ok")
   override val ok: Boolean,
 
-  @Json(name = "result")
+  @field:Json(name = "result")
   override val result: User
 ): Returned<User>
 
 @JsonClass(generateAdapter = true)
 class MessageReturned(
-  @Json(name = "ok")
+  @field:Json(name = "ok")
   override val ok: Boolean,
 
-  @Json(name = "result")
+  @field:Json(name = "result")
   override val result: Message
 ): Returned<Message>
 
 
 @JsonClass(generateAdapter = true)
 class UpdatesReturned(
-  @Json(name = "ok")
+  @field:Json(name = "ok")
   override val ok: Boolean,
 
-  @Json(name = "result")
+  @field:Json(name = "result")
   override val result: List<Update>
 ): Returned<List<Update>>

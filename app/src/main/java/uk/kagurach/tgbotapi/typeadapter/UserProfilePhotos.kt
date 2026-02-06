@@ -5,9 +5,9 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class UserProfilePhotos(
-  @Json(name = "total_count")
+  @field:Json(name = "total_count")
   val totalCount: Long,
 
-  @Json(name = "photos")
+  @field:Json(name = "photos")
   val photos: List<List<PhotoSize>>
 )

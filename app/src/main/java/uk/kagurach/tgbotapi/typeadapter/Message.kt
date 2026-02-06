@@ -5,124 +5,124 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class Message(
-  @Json(name = "message_id")
+  @field:Json(name = "message_id")
   val messageId: Long,
 
-  @Json(name = "message_thread_id")
+  @field:Json(name = "message_thread_id")
   val messageThreadId: Long? = null,
 
-  @Json(name = "from")
+  @field:Json(name = "from")
   val from: User? = null,
 
-  @Json(name = "sender_chat")
+  @field:Json(name = "sender_chat")
   val senderChat: Chat? = null,
 
-  @Json(name = "sender_boost_count")
+  @field:Json(name = "sender_boost_count")
   val senderBoostCount: Long? = null,
 
-  @Json(name = "sender_business_bot")
+  @field:Json(name = "sender_business_bot")
   val senderBusinessBot: User? = null,
 
-  @Json(name = "date")
+  @field:Json(name = "date")
   val date: Long,
 
-  @Json(name = "business_connection_id")
+  @field:Json(name = "business_connection_id")
   val businessConnectionId: String? = null,
 
-  @Json(name = "chat")
+  @field:Json(name = "chat")
   val chat: Chat,
 
-  @Json(name = "forward_origin")
+  @field:Json(name = "forward_origin")
   val forwardOrigin: MessageOrigin? = null,
 
-  @Json(name = "is_topic_message")
+  @field:Json(name = "is_topic_message")
   val isTopicMessage: Boolean? = null,
 
-  @Json(name = "is_automatic_forward")
+  @field:Json(name = "is_automatic_forward")
   val isAutomaticForward: Boolean? = null,
 
-  @Json(name = "reply_to_message")
+  @field:Json(name = "reply_to_message")
   val replyToMessage: Message? = null,
 
-  @Json(name = "external_reply")
+  @field:Json(name = "external_reply")
   val externalReply: ExternalReplyInfo? = null,
 
-  @Json(name = "quote")
+  @field:Json(name = "quote")
   val quote: TextQuote? = null,
 
-  @Json(name = "reply_to_story")
+  @field:Json(name = "reply_to_story")
   val replyToStory: Story? = null,
 
-  @Json(name = "via_bot")
+  @field:Json(name = "via_bot")
   val viaBot: User? = null,
 
-  @Json(name = "edit_date")
+  @field:Json(name = "edit_date")
   val editDate: Long? = null,
 
-  @Json(name = "has_protected_content")
+  @field:Json(name = "has_protected_content")
   val hasProtectedContent: Boolean? = null,
 
-  @Json(name = "is_from_offline")
+  @field:Json(name = "is_from_offline")
   val isFromOffline: Boolean? = null,
 
-  @Json(name = "media_group_id")
+  @field:Json(name = "media_group_id")
   val mediaGroupId: String? = null,
 
-  @Json(name = "author_signature")
+  @field:Json(name = "author_signature")
   val authorSignature: String? = null,
 
-  @Json(name = "text")
+  @field:Json(name = "text")
   val text: String? = null,
 
-  @Json(name = "entities")
+  @field:Json(name = "entities")
   val entities: List<MessageEntity>? = null,
 
-  @Json(name = "link_preview_options")
+  @field:Json(name = "link_preview_options")
   val linkPreviewOptions: LinkPreviewOptions? = null,
 
-  @Json(name = "effect_id")
+  @field:Json(name = "effect_id")
   val effectId: String? = null,
 
-  @Json(name = "animation")
+  @field:Json(name = "animation")
   val animation: Animation? = null,
 
-  @Json(name = "audio")
+  @field:Json(name = "audio")
   val audio: Audio? = null,
 
-  @Json(name = "document")
+  @field:Json(name = "document")
   val document: Document? = null,
 
   // @Json(name = "paid_media")
   // val paidMedia: PaidMediaInfo? = null,
 
-  @Json(name = "photo")
+  @field:Json(name = "photo")
   val photo: List<PhotoSize>? = null,
 
-  @Json(name = "sticker")
+  @field:Json(name = "sticker")
   val sticker: Sticker? = null,
 
-  @Json(name = "story")
+  @field:Json(name = "story")
   val story: Story? = null,
 
-  @Json(name = "video")
+  @field:Json(name = "video")
   val video: Video? = null,
 
-  @Json(name = "video_note")
+  @field:Json(name = "video_note")
   val videoNote: VideoNote? = null,
 
-  @Json(name = "voice")
+  @field:Json(name = "voice")
   val voice: Voice? = null,
 
-  @Json(name = "caption")
+  @field:Json(name = "caption")
   val caption: String? = null,
 
-  @Json(name = "caption_entities")
+  @field:Json(name = "caption_entities")
   val captionEntities: List<MessageEntity>? = null,
 
-  @Json(name = "show_caption_above_media")
+  @field:Json(name = "show_caption_above_media")
   val showCaptionAboveMedia: Boolean? = null,
 
-  @Json(name = "has_media_spoiler")
+  @field:Json(name = "has_media_spoiler")
   val hasMediaSpoiler: Boolean? = null,
 
   // @Json(name = "contact")
@@ -143,37 +143,37 @@ data class Message(
   // @Json(name = "location")
   // val location: Location? = null,
 
-  @Json(name = "new_chat_members")
+  @field:Json(name = "new_chat_members")
   val newChatMembers: List<User>? = null,
 
-  @Json(name = "left_chat_member")
+  @field:Json(name = "left_chat_member")
   val leftChatMember: User? = null,
 
-  @Json(name = "new_chat_title")
+  @field:Json(name = "new_chat_title")
   val newChatTitle: String? = null,
 
-  @Json(name = "new_chat_photo")
+  @field:Json(name = "new_chat_photo")
   val newChatPhoto: List<PhotoSize>? = null,
 
-  @Json(name = "delete_chat_photo")
+  @field:Json(name = "delete_chat_photo")
   val deleteChatPhoto: Boolean? = null,
 
-  @Json(name = "group_chat_created")
+  @field:Json(name = "group_chat_created")
   val groupChatCreated: Boolean? = null,
 
-  @Json(name = "supergroup_chat_created")
+  @field:Json(name = "supergroup_chat_created")
   val supergroupChatCreated: Boolean? = null,
 
-  @Json(name = "channel_chat_created")
+  @field:Json(name = "channel_chat_created")
   val channelChatCreated: Boolean? = null,
 
   // @Json(name = "message_auto_delete_timer_changed")
   // val messageAutoDeleteTimerChanged: MessageAutoDeleteTimerChanged? = null,
 
-  @Json(name = "migrate_to_chat_id")
+  @field:Json(name = "migrate_to_chat_id")
   val migrateToChatId: Long? = null,
 
-  @Json(name = "migrate_from_chat_id")
+  @field:Json(name = "migrate_from_chat_id")
   val migrateFromChatId: Long? = null,
 
   // @Json(name = "pinned_message")
@@ -194,7 +194,7 @@ data class Message(
   // @Json(name = "chat_shared")
   // val chatShared: ChatShared? = null,
 
-  @Json(name = "connected_website")
+  @field:Json(name = "connected_website")
   val connectedWebsite: String? = null,
 
   // @Json(name = "write_access_allowed")

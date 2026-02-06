@@ -5,48 +5,48 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class Sticker(
-  @Json(name = "file_id")
+  @field:Json(name = "file_id")
   val fileId: String,
 
-  @Json(name = "file_unique_id")
+  @field:Json(name = "file_unique_id")
   val fileUniqueId: String,
 
-  @Json(name = "type")
+  @field:Json(name = "type")
   val type: String,
 
-  @Json(name = "width")
+  @field:Json(name = "width")
   val width: Long,
 
-  @Json(name = "height")
+  @field:Json(name = "height")
   val height: Long,
 
-  @Json(name = "is_animated")
+  @field:Json(name = "is_animated")
   val isAnimated: Boolean,
 
-  @Json(name = "is_video")
+  @field:Json(name = "is_video")
   val isVideo: Boolean,
 
-  @Json(name = "thumbnail")
+  @field:Json(name = "thumbnail")
   val thumbnail: PhotoSize? = null,
 
-  @Json(name = "emoji")
+  @field:Json(name = "emoji")
   val emoji: String? = null,
 
-  @Json(name = "set_name")
+  @field:Json(name = "set_name")
   val setName: String? = null,
 
-  @Json(name = "premium_animation")
+  @field:Json(name = "premium_animation")
   val premiumAnimation: File? = null,
 
   // @Json(name = "mask_position")
   // val maskPosition: MaskPosition? = null,
 
-  @Json(name = "custom_emoji_id")
+  @field:Json(name = "custom_emoji_id")
   val customEmojiId: String? = null,
 
-  @Json(name = "needs_repainting")
+  @field:Json(name = "needs_repainting")
   val needsRepainting: Boolean? = null,
 
-  @Json(name = "file_size")
+  @field:Json(name = "file_size")
   val fileSize: Long? = null,
 )

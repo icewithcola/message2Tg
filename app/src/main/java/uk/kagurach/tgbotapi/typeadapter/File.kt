@@ -5,15 +5,15 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class File(
-  @Json(name = "file_id")
+  @field:Json(name = "file_id")
   val fileId: String,
 
-  @Json(name = "file_unique_id")
+  @field:Json(name = "file_unique_id")
   val fileUniqueId: String,
 
-  @Json(name = "file_size")
+  @field:Json(name = "file_size")
   val fileSize: Long? = null,
 
-  @Json(name = "file_path")
+  @field:Json(name = "file_path")
   val filePath: String? = null,
 )

@@ -5,18 +5,18 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class PhotoSize(
-  @Json(name = "file_id")
+  @field:Json(name = "file_id")
   val fileId: String,
 
-  @Json(name = "file_unique_id")
+  @field:Json(name = "file_unique_id")
   val fileUniqueId: String,
 
-  @Json(name = "width")
+  @field:Json(name = "width")
   val width: Long,
 
-  @Json(name = "height")
+  @field:Json(name = "height")
   val height: Long,
 
-  @Json(name = "file_size")
+  @field:Json(name = "file_size")
   val fileSize: Long? = null
 )

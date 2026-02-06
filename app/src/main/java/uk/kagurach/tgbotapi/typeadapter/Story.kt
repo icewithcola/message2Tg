@@ -5,9 +5,9 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class Story(
-  @Json(name = "chat")
+  @field:Json(name = "chat")
   val chat: Chat,
 
-  @Json(name = "id")
+  @field:Json(name = "id")
   val id: Long,
 )

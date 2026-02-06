@@ -5,24 +5,24 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class MessageEntity(
-  @Json(name = "type")
+  @field:Json(name = "type")
   val type: String,
 
-  @Json(name = "offset")
+  @field:Json(name = "offset")
   val offset: Long,
 
-  @Json(name = "length")
+  @field:Json(name = "length")
   val length: Long,
 
-  @Json(name = "url")
+  @field:Json(name = "url")
   val url: String? = null,
 
-  @Json(name = "user")
+  @field:Json(name = "user")
   val user: User? = null,
 
-  @Json(name = "language")
+  @field:Json(name = "language")
   val language: String? = null,
 
-  @Json(name = "custom_emoji_id")
+  @field:Json(name = "custom_emoji_id")
   val customEmojiId: String? = null
 )

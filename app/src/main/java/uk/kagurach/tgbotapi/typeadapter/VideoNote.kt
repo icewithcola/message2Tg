@@ -5,21 +5,21 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class VideoNote(
-  @Json(name = "file_id")
+  @field:Json(name = "file_id")
   val fileId: String,
 
-  @Json(name = "file_unique_id")
+  @field:Json(name = "file_unique_id")
   val fileUniqueId: String,
 
-  @Json(name = "length")
+  @field:Json(name = "length")
   val length: Long,
 
-  @Json(name = "duration")
+  @field:Json(name = "duration")
   val duration: Long,
 
-  @Json(name = "thumbnail")
+  @field:Json(name = "thumbnail")
   val thumbnail: PhotoSize? = null,
 
-  @Json(name = "file_size")
+  @field:Json(name = "file_size")
   val fileSize: Long? = null,
 )

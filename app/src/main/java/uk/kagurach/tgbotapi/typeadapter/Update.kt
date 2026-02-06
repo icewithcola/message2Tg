@@ -5,28 +5,28 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class Update(
-  @Json(name = "update_id")
+  @field:Json(name = "update_id")
   val updateId: Long,
 
-  @Json(name = "message")
+  @field:Json(name = "message")
   val message: Message? = null,
 
-  @Json(name = "edited_message")
+  @field:Json(name = "edited_message")
   val editedMessage: Message? = null,
 
-  @Json(name = "channel_post")
+  @field:Json(name = "channel_post")
   val channelPost: Message? = null,
 
-  @Json(name = "edited_channel_post")
+  @field:Json(name = "edited_channel_post")
   val editedChannelPost: Message? = null,
 
   // @Json(name = "business_connection")
   // val businessConnection: BusinessConnection? = null,
 
-  @Json(name = "business_message")
+  @field:Json(name = "business_message")
   val businessMessage: Message? = null,
 
-  @Json(name = "edited_business_message")
+  @field:Json(name = "edited_business_message")
   val editedBusinessMessage: Message? = null,
 
   // @Json(name = "deleted_business_messages")

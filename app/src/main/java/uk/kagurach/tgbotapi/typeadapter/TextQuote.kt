@@ -5,15 +5,15 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class TextQuote(
-  @Json(name = "text")
+  @field:Json(name = "text")
   val text: String,
 
-  @Json(name = "entities")
+  @field:Json(name = "entities")
   val entities: List<MessageEntity>? = null,
 
-  @Json(name = "position")
+  @field:Json(name = "position")
   val position: Long,
 
-  @Json(name = "is_manual")
+  @field:Json(name = "is_manual")
   val isManual: Boolean? = null,
 )

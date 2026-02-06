@@ -5,49 +5,49 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class ExternalReplyInfo(
-  @Json(name = "origin")
+  @field:Json(name = "origin")
   val origin: MessageOrigin,
 
-  @Json(name = "chat")
+  @field:Json(name = "chat")
   val chat: Chat? = null,
 
-  @Json(name = "message_id")
+  @field:Json(name = "message_id")
   val messageId: Long? = null,
 
-  @Json(name = "link_preview_options")
+  @field:Json(name = "link_preview_options")
   val linkPreviewOptions: LinkPreviewOptions? = null,
 
-  @Json(name = "animation")
+  @field:Json(name = "animation")
   val animation: Animation? = null,
 
-  @Json(name = "audio")
+  @field:Json(name = "audio")
   val audio: Audio? = null,
 
-  @Json(name = "document")
+  @field:Json(name = "document")
   val document: Document? = null,
 
   // @Json(name = "paid_media")
   // val paidMedia: PaidMediaInfo? = null,
 
-  @Json(name = "photo")
+  @field:Json(name = "photo")
   val photo: List<PhotoSize>? = null,
 
-  @Json(name = "sticker")
+  @field:Json(name = "sticker")
   val sticker: Sticker? = null,
 
-  @Json(name = "story")
+  @field:Json(name = "story")
   val story: Story? = null,
 
-  @Json(name = "video")
+  @field:Json(name = "video")
   val video: Video? = null,
 
-  @Json(name = "video_note")
+  @field:Json(name = "video_note")
   val videoNote: VideoNote? = null,
 
-  @Json(name = "voice")
+  @field:Json(name = "voice")
   val voice: Voice? = null,
 
-  @Json(name = "has_media_spoiler")
+  @field:Json(name = "has_media_spoiler")
   val hasMediaSpoiler: Boolean? = null,
 
   // @Json(name = "contact")

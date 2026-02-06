@@ -5,30 +5,30 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class Animation(
-  @Json(name = "file_id")
+  @field:Json(name = "file_id")
   val ileId: String,
 
-  @Json(name = "file_unique_id")
+  @field:Json(name = "file_unique_id")
   val fileUniqueId: String,
 
-  @Json(name = "width")
+  @field:Json(name = "width")
   val width: Long,
 
-  @Json(name = "height")
+  @field:Json(name = "height")
   val height: Long,
 
-  @Json(name = "duration")
+  @field:Json(name = "duration")
   val duration: Long,
 
-  @Json(name = "thumbnail")
+  @field:Json(name = "thumbnail")
   val thumbnail: PhotoSize? = null,
 
-  @Json(name = "file_name")
+  @field:Json(name = "file_name")
   val fileName: String? = null,
 
-  @Json(name = "mime_type")
+  @field:Json(name = "mime_type")
   val mimeType: String? = null,
 
-  @Json(name = "file_size")
+  @field:Json(name = "file_size")
   val fileSize: Long? = null,
 )
