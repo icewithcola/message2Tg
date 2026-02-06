@@ -44,9 +44,12 @@ suspend fun formatMessage(context: Context, sender: String, text: String): Strin
   val settingStorage = SettingStorage(context)
 
   // Get our verification code if enabled
-  val verificationCode = if (settingStorage.get(settingStorage.extractVerifyCode) == true) {
-    extractVerifyCode(text, context)
-  } else null
+    val verificationCode = if (settingStorage.get(settingStorage.extractVerifyCode) == true) {
+        val extractor = VerificationCodeExtractor(context)
+        extractor.extract(text)
+    } else {
+        null
+    }
   
   val messageContent = MessageContent(
     sender = sender,
