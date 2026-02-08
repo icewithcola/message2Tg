@@ -7,7 +7,6 @@ import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
-import android.os.PowerManager
 import androidx.core.app.ServiceCompat
 import uk.kagurach.message2TG.util.LogUtil.logi
 
@@ -16,21 +15,8 @@ class ForwardService : Service() {
     var isStarted = false
   }
 
-  private var wakeLock: PowerManager.WakeLock? = null
-
   override fun onBind(intent: Intent?): IBinder? {
     return null
-  }
-
-  private fun acquireWakeLock() {
-    val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-    wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "message2TG:WakeLock")
-    wakeLock?.acquire(10 * 60 * 1000L /* 10 minutes */)
-  }
-
-  private fun releaseWakeLock() {
-    wakeLock?.release()
-    wakeLock = null
   }
 
   private fun startForegroundService() {
@@ -73,10 +59,9 @@ class ForwardService : Service() {
       startForegroundService()
     }
 
-    // 3. 获取 WakeLock 保持 CPU 运行
-    acquireWakeLock()
+    // 这里原来是获取了 WakeLock,但是用 CommandWorker 就不需要了
 
-    // 4. 把后台接受指令消息打开
+    // 3. 把后台接受指令消息打开
     CommandWorker.scheduleOneTimeWork(baseContext)
 
     return START_STICKY
@@ -89,7 +74,6 @@ class ForwardService : Service() {
 
   override fun onDestroy() {
     logi("ForwardService", "Service Destroyed")
-    releaseWakeLock()
     restartService()
     super.onDestroy()
   }
