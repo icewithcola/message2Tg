@@ -27,6 +27,7 @@ class SettingStorage(private val context: Context) {
   val openAIEndpoint = stringPreferencesKey("openai_endpoint")
   val openAIKey = stringPreferencesKey("openai_token")
   val openAIModel = stringPreferencesKey("openai_model")
+  val advancedAITools = booleanPreferencesKey("advanced_ai_tools")
 
   fun <T> get(key: Preferences.Key<T>): T? =
     runBlocking {

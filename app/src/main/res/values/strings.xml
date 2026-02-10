@@ -35,4 +35,6 @@
   <string name="openai_key_dscr">OpenAI API key, leave empty to use disable AI verification code extraction</string>
   <string name="openai_model">OpenAI Model</string>
   <string name="openai_model_dscr">OpenAI model to use, leave empty to disable AI verification code extraction</string>
+  <string name="advanced_ai_tools">Use Advanced AI Tools</string>
+  <string name="advanced_ai_tools_dscr">Use AI to give you a short version of your message, also type check and verification code extract</string>
 </resources>

@@ -14,7 +14,7 @@ object TelegramMarkdownEscaper {
     '>' to "&gt;",
     '&' to "&amp;"
   )
-  
+
   fun String.escapeForTelegram(): String {
     return buildString(length) {
       for (char in this@escapeForTelegram) {
@@ -42,21 +42,28 @@ data class MessageContent(
  */
 suspend fun formatMessage(context: Context, sender: String, text: String): String {
   val settingStorage = SettingStorage(context)
+  if (settingStorage.get(settingStorage.advancedAITools) == true) {
+    val intelligentService = IntelligentService(context)
+    val result = intelligentService.buildTelegramMessage(context, sender, text)
+    if (result != null) {
+      return result
+    }
+  }
 
   // Get our verification code if enabled
-    val verificationCode = if (settingStorage.get(settingStorage.extractVerifyCode) == true) {
-        val extractor = VerificationCodeExtractor(context)
-        extractor.extract(text)
-    } else {
-        null
-    }
-  
+  val verificationCode = if (settingStorage.get(settingStorage.extractVerifyCode) == true) {
+    val extractor = VerificationCodeExtractor(context)
+    extractor.extract(text)
+  } else {
+    null
+  }
+
   val messageContent = MessageContent(
     sender = sender,
     text = text,
     verificationCode = verificationCode
   )
-  
+
   return buildTelegramMessage(context, messageContent)
 }
 

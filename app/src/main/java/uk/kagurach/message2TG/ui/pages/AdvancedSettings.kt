@@ -105,11 +105,17 @@ fun AdvancedSettings(context: Context) {
       initialState = settingStorage.get(settingStorage.openAIModel) ?: ""
     ) { settingStorage.set(settingStorage.openAIModel, it) }
 
+    setting.BooleanSetting(
+      name = context.getString(R.string.advanced_ai_tools),
+      description = context.getString(R.string.advanced_ai_tools_dscr),
+      initialState = settingStorage.get(settingStorage.advancedAITools) == false
+    ) { settingStorage.set(settingStorage.advancedAITools, it) }
+
     TextButton(
       modifier = Modifier.padding(start = 5.dp), onClick = {
         diagnoseMessage =
           DiagnoseHelper.diagnose(context).joinToString() +
-          DiagnoseHelper.buildInfo().joinToString()
+              DiagnoseHelper.buildInfo().joinToString()
       }) {
       Text(text = stringResource(R.string.diagnose))
     }

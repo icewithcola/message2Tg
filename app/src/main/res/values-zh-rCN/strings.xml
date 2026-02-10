@@ -38,4 +38,6 @@
   <string name="openai_key_dscr">OpenAI API 密钥, 留空则禁用 AI 验证码提取</string>
   <string name="openai_model">OpenAI 模型</string>
   <string name="openai_model_dscr">OpenAI 模型, 留空则禁用 AI 验证码提取</string>
+  <string name="advanced_ai_tools">使用高级AI功能</string>
+  <string name="advanced_ai_tools_dscr">让AI帮您进行短信意图识别、验证码提取</string>
 </resources>
