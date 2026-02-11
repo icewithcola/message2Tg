@@ -13,6 +13,7 @@ import org.json.JSONObject
 import uk.kagurach.message2TG.R
 import uk.kagurach.message2TG.SettingStorage
 import uk.kagurach.message2TG.util.TelegramMarkdownEscaper.escapeForTelegram
+import java.util.concurrent.TimeUnit
 
 data class MessageIntent(
   val realIntent: String, // The intent of sender sending this message
@@ -26,7 +27,10 @@ class IntelligentService(context: Context) {
   private val openAIEndpoint = settingStorage.get(settingStorage.openAIEndpoint)
   private val openAIKey = settingStorage.get(settingStorage.openAIKey)
   private val openAIModel = settingStorage.get(settingStorage.openAIModel)
-  private val client = OkHttpClient()
+  private val client = OkHttpClient.Builder()
+    .readTimeout(60, TimeUnit.SECONDS)
+    .connectTimeout(800, TimeUnit.MILLISECONDS)
+    .build()
   private val prompt =
     if (LocaleListCompat.getAdjustedDefault()[0]?.language == "zh") PROMPT_CN else PROMPT_EN
 
@@ -41,7 +45,7 @@ class IntelligentService(context: Context) {
 
     return buildString {
       if (!realIntent.isNullOrEmpty()) {
-        append(realIntent)
+        append("[${realIntent}] ")
       }
       append("${context.getString(R.string.sender)} <a href=\"tel:${sender}\">${sender.escapeForTelegram()}</a>\n")
       if (!verificationCode.isNullOrEmpty()) {
@@ -163,7 +167,6 @@ As a technical parsing utility, do not lecture users on security. However, you m
 
 # Safety Policy
 你作为一个技术解析组件，不对验证码本身进行安全性评价，但必须履行“风险标注”职责，识别恶意扣费、钓鱼链接等电信诈骗行为。
-
     """
   }
 }

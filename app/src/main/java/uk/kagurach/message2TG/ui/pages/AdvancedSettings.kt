@@ -108,7 +108,7 @@ fun AdvancedSettings(context: Context) {
     setting.BooleanSetting(
       name = context.getString(R.string.advanced_ai_tools),
       description = context.getString(R.string.advanced_ai_tools_dscr),
-      initialState = settingStorage.get(settingStorage.advancedAITools) == false
+      initialState = settingStorage.get(settingStorage.advancedAITools) == true
     ) { settingStorage.set(settingStorage.advancedAITools, it) }
 
     TextButton(
