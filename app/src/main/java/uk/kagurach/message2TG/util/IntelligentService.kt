@@ -27,27 +27,36 @@ class IntelligentService(context: Context) {
   private val openAIKey = settingStorage.get(settingStorage.openAIKey)
   private val openAIModel = settingStorage.get(settingStorage.openAIModel)
   private val client = OkHttpClient()
-  private val prompt = if (LocaleListCompat.getAdjustedDefault()[0]?.language == "zh") PROMPT_CN else PROMPT_EN
+  private val prompt =
+    if (LocaleListCompat.getAdjustedDefault()[0]?.language == "zh") PROMPT_CN else PROMPT_EN
 
   /**
    * Build a Telegram message from the given content.
    */
-  suspend fun buildTelegramMessage(context: Context, sender: String, text: String): String? =
-    makeRequest(text)?.let { intent ->
-      buildString {
-        append("[${intent.realIntent}]")
-        append("${context.getString(R.string.sender)} <a href=\"tel:${sender}\">${sender.escapeForTelegram()}</a>\n")
-        intent.verificationCode?.let {
-          append("${context.getString(R.string.verification_code)} <code>${it.escapeForTelegram()}</code>\n")
-        }
-        intent.tldr?.let { append(it) }
-        append("${context.getString(R.string.original_text)}\n")
-        append("<blockquote>")
-        append(text.escapeForTelegram())
-        append("</blockquote>")
-      }
-    }
+  suspend fun buildTelegramMessage(context: Context, sender: String, text: String): String? {
+    val result = makeRequest(text) ?: return null
+    val realIntent = result.realIntent
+    val verificationCode = result.verificationCode
+    val tldr = result.tldr
 
+    return buildString {
+      if (!realIntent.isNullOrEmpty()) {
+        append(realIntent)
+      }
+      append("${context.getString(R.string.sender)} <a href=\"tel:${sender}\">${sender.escapeForTelegram()}</a>\n")
+      if (!verificationCode.isNullOrEmpty()) {
+        append("${context.getString(R.string.verification_code)} <code>${verificationCode!!.escapeForTelegram()}</code>\n")
+      }
+      if (!tldr.isNullOrEmpty()) {
+        append(tldr)
+      }
+
+      append("${context.getString(R.string.original_text)}\n")
+      append("<blockquote>")
+      append(text.escapeForTelegram())
+      append("</blockquote>")
+    }
+  }
 
   private suspend fun makeRequest(text: String): MessageIntent? = withContext(Dispatchers.IO) {
     try {
@@ -103,12 +112,16 @@ class IntelligentService(context: Context) {
         }
       }
     } catch (e: Exception) {
-      LogUtil.loge(TAG, "Exception: ${e.message}")
-      e.printStackTrace()
+      LogUtil.loge(TAG, "Exception: ${e.message}\n${e.stackTraceToString()}")
     }
 
     return@withContext null
   }
+
+  /**
+   * Sometimes, AI returns literally "null"
+   */
+  private fun String?.isNullOrEmpty(): Boolean = (this == null || this.isEmpty() || this == "null")
 
   companion object {
     private const val TAG = "IntelligentService"
