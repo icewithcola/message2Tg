@@ -53,6 +53,7 @@ class IntelligentService(context: Context) {
       }
       if (!tldr.isNullOrEmpty()) {
         append(tldr)
+        append('\n')
       }
 
       append("${context.getString(R.string.original_text)}\n")
