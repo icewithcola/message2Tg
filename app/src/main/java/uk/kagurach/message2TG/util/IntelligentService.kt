@@ -43,17 +43,17 @@ class IntelligentService(context: Context) {
 
     return buildString {
       @Suppress("UselessCallOnNotNull")
-      if (!realIntent.isNullOrBlank() || "null" == realIntent) {
+      if (!realIntent.isNullOrBlank() && "null" != realIntent) {
         append("[${realIntent}] ")
       }
 
-      if (!verificationCode.isNullOrBlank() || "null" == verificationCode) {
+      if (!verificationCode.isNullOrBlank() && "null" != verificationCode) {
         append("${context.getString(R.string.verification_code)} <code>${verificationCode.escapeForTelegram()}</code>\n")
       }
 
       append("${context.getString(R.string.sender)} <a href=\"tel:${sender}\">${sender.escapeForTelegram()}</a>\n")
 
-      if (!tldr.isNullOrBlank() || "null" == tldr) {
+      if (!tldr.isNullOrBlank() && "null" != tldr) {
         append(tldr)
         append('\n')
       }
