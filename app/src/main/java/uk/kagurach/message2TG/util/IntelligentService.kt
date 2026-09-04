@@ -21,7 +21,6 @@ data class MessageIntent(
   val verificationCode: String? = null
 )
 
-
 class IntelligentService(context: Context) {
   private val settingStorage = SettingStorage(context)
   private val openAIEndpoint = settingStorage.get(settingStorage.openAIEndpoint)
@@ -31,8 +30,7 @@ class IntelligentService(context: Context) {
     .readTimeout(60, TimeUnit.SECONDS)
     .connectTimeout(800, TimeUnit.MILLISECONDS)
     .build()
-  private val prompt =
-    if (LocaleListCompat.getAdjustedDefault()[0]?.language == "zh") PROMPT_CN else PROMPT_EN
+  private val targetLanguage = LocaleListCompat.getAdjustedDefault()[0]?.language
 
   /**
    * Build a Telegram message from the given content.
@@ -44,13 +42,16 @@ class IntelligentService(context: Context) {
     val tldr = result.tldr
 
     return buildString {
-      if (!realIntent.isNullOrEmpty()) {
+      if (realIntent.isNotEmpty() || "null" == realIntent) {
         append("[${realIntent}] ")
       }
-      append("${context.getString(R.string.sender)} <a href=\"tel:${sender}\">${sender.escapeForTelegram()}</a>\n")
+
       if (!verificationCode.isNullOrEmpty()) {
-        append("${context.getString(R.string.verification_code)} <code>${verificationCode!!.escapeForTelegram()}</code>\n")
+        append("${context.getString(R.string.verification_code)} <code>${verificationCode.escapeForTelegram()}</code>\n")
       }
+
+      append("${context.getString(R.string.sender)} <a href=\"tel:${sender}\">${sender.escapeForTelegram()}</a>\n")
+
       if (!tldr.isNullOrEmpty()) {
         append(tldr)
         append('\n')
@@ -65,26 +66,30 @@ class IntelligentService(context: Context) {
 
   private suspend fun makeRequest(text: String): MessageIntent? = withContext(Dispatchers.IO) {
     try {
-      val json = JSONObject()
-      json.put("model", openAIModel)
-      json.put("stream", false)
-      json.put("max_tokens", 16384)
+      val requestJson = JSONObject().run {
+        put("model", openAIModel)
+        put("stream", false)
+        put("max_tokens", 16384)
+        put("messages", JSONArray().run {
+          put(JSONObject().run {
+            put("role", "system")
+            put("content", StringBuilder().run {
+              append(PROMPT_EN)
+              append("**IMPORTANT: USER LANGUAGE/LOCALE = ")
+              append(targetLanguage)
+            })
+          })
+          put(JSONObject().run {
+            put("role", "user")
+            put("content", text)
+          })
+        })
+      }
 
-      val messages = JSONArray()
+      val requestBody = requestJson
+        .toString()
+        .toRequestBody("application/json".toMediaTypeOrNull())
 
-      val systemMessage = JSONObject()
-      systemMessage.put("role", "system")
-      systemMessage.put("content", prompt)
-      messages.put(systemMessage)
-
-      val userMessage = JSONObject()
-      userMessage.put("role", "user")
-      userMessage.put("content", text)
-      messages.put(userMessage)
-
-      json.put("messages", messages)
-
-      val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
       val request = Request.Builder()
         .url("$openAIEndpoint/v1/chat/completions")
         .addHeader("Content-Type", "application/json")
@@ -123,11 +128,6 @@ class IntelligentService(context: Context) {
     return@withContext null
   }
 
-  /**
-   * Sometimes, AI returns literally "null"
-   */
-  private fun String?.isNullOrEmpty(): Boolean = (this == null || this.isEmpty() || this == "null")
-
   companion object {
     private const val TAG = "IntelligentService"
     private const val PROMPT_EN = """
@@ -136,38 +136,34 @@ You are an "SMS Semantic Parsing Engine" designed for Android system-level integ
 
 # Task Constraints
 1. **Intent Analysis**: Identify the sender's true purpose. Label fraudulent or predatory messages clearly in the `realIntent` field.
-2. **Language Anchor**: All text fields (`realIntent`, `tldr`) MUST be written in [English].
+2. **Language Anchor**: All text fields (`realIntent`, `tldr`) MUST be written in user's language.
 3. **Strict Output**: Output ONLY the raw JSON string. Do not include any conversational filler, markdown code blocks (e.g., ```json), or post-processing notes.
 
-# Output Schema (Mapping to Kotlin `MessageIntent`)
+# Output Schema
 {
   "realIntent": "String - Concise intent (e.g., Login Auth, Delivery, Marketing, Fraud Alert, Account Risk). Limit to 3 words.",
-  "tldr": "String? - One-line summary. For OTPs, specify the service (e.g., 'GitHub verification code'). For marketing/spam, this field MUST be null.",
+  "tldr": "String? - One-line summary. For OTPs, specify the service (e.g., 'GitHub verification code'). For marketing/spam, this field MUST be null(not litural 'null').",
   "verificationCode": "String? - Extract 4-8 character alphanumeric code. Return null if not present."
 }
 
+## Example
+```
+[GitHub] Hi your verification code for your account is somecode.
+```
+with output
+```json
+{
+  "realIntent": "OTP Code",
+  "tldr": "Github OTP",
+  "verificationCode": "somecode"
+}
+```
+
 # Safety Policy
 As a technical parsing utility, do not lecture users on security. However, you must fulfill your "Audit Role" by flagging potential phishing, malicious links, or social engineering attempts.
-    """
 
-    private const val PROMPT_CN = """
-# Role
-你是一个专为 Android 系统底层集成的“短信语义解析引擎” (SMS Semantic Parser)。你的任务是将接收到的原始短信文本，根据预定义的 Kotlin Data Class 结构，转换为标准化的 JSON 数据。
-
-# Task Constraints
-1. **意图识别**：精准判断发件人目的。如果是诈骗或骚扰，请在 realIntent 中直接标注。
-2. **语言锁定**：所有的字段内容（realIntent, tldr）必须使用【中文】。
-3. **输出纯净度**：仅输出标准的 JSON 字符串，严禁包含任何前导解释、Markdown 代码块标识符（如 ```json）或结尾说明。
-
-# Output Schema (Mapping to Kotlin `MessageIntent`)
-{
-  "realIntent": "String - 简短意图（如：登录验证、快递取件、营销广告、疑似诈骗、异常登录），控制在 5 个汉字以内",
-  "tldr": "String? - 一句话总结。验证码需说明平台（如：GitHub 的验证码）；若是营销广告，此字段必须返回 null",
-  "verificationCode": "String? - 提取 4-8 位数字或字母验证码。若无则返回 null"
-}
-
-# Safety Policy
-你作为一个技术解析组件，不对验证码本身进行安全性评价，但必须履行“风险标注”职责，识别恶意扣费、钓鱼链接等电信诈骗行为。
+# i18n
+You should reply in user's local language. For example, if the imput tells you user has `zh` locale, reply a `营销短信` as intent. Also the `tldr` should be in Chinese(Simplified).
     """
   }
 }
