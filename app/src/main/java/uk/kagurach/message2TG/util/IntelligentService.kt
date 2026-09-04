@@ -42,17 +42,18 @@ class IntelligentService(context: Context) {
     val tldr = result.tldr
 
     return buildString {
-      if (realIntent.isNotEmpty() || "null" == realIntent) {
+      @Suppress("UselessCallOnNotNull")
+      if (!realIntent.isNullOrBlank() || "null" == realIntent) {
         append("[${realIntent}] ")
       }
 
-      if (!verificationCode.isNullOrEmpty()) {
+      if (!verificationCode.isNullOrBlank() || "null" == verificationCode) {
         append("${context.getString(R.string.verification_code)} <code>${verificationCode.escapeForTelegram()}</code>\n")
       }
 
       append("${context.getString(R.string.sender)} <a href=\"tel:${sender}\">${sender.escapeForTelegram()}</a>\n")
 
-      if (!tldr.isNullOrEmpty()) {
+      if (!tldr.isNullOrBlank() || "null" == tldr) {
         append(tldr)
         append('\n')
       }
