@@ -62,12 +62,21 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo $VERSION >> ./version
 
+      - name: Prepare release notes
+        run: |
+          awk -v version="$VERSION" '
+            $0 ~ "^## \\[" version "\\]" { found=1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+          test -s release-notes.md
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.VERSION }}
           name: Release v${{ env.VERSION }}
-          body: "New APK release"
+          body_path: release-notes.md
           draft: false
           prerelease: false
           files: |
